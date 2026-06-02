@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EOSCore Game Integration Guide</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<style>
+:root {
+  --bs-body-bg: #0f1116; --bs-body-color: #d7dadc;
+  --sidebar-bg: #161922; --sidebar-active: #2d6cdf;
+  --topbar-bg: #1a1e29; --code-bg: #1f2330; --accent: #4c8bf5;
+}
+body { font-size: 15px; }
+code, pre { background: var(--code-bg); border-radius: 4px; }
+code { padding: 1px 6px; color: #f7c879; font-size: 90%; }
+pre { padding: 14px 16px; overflow-x: auto; border: 1px solid #2a2f3e; font-size: 0.85rem; line-height: 1.5; }
+pre code { background: transparent; padding: 0; color: inherit; }
+kbd { background: #2a2f3e; padding: 2px 6px; border-radius: 3px; font-size: 0.82rem; }
+
+.topbar { background: var(--topbar-bg); border-bottom: 1px solid #2a2f3e;
+  padding: 8px 18px; position: sticky; top: 0; z-index: 1030;
+  display: flex; align-items: center; gap: 14px; }
+.topbar .brand { font-weight: 600; font-size: 1.1rem; letter-spacing: 0.3px; }
+.topbar .brand .accent { color: var(--accent); }
+.topbar .version-pill { font-size: 0.72rem; padding: 2px 8px; border-radius: 10px;
+  background: #2a3550; color: #b8cdfa; }
+
+.layout { display: grid; grid-template-columns: 240px 1fr; min-height: calc(100vh - 50px); }
+@media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .sidebar { display:none; } }
+
+.sidebar { background: var(--sidebar-bg); border-right: 1px solid #2a2f3e;
+  padding: 18px 0; position: sticky; top: 50px;
+  height: calc(100vh - 50px); overflow-y: auto; }
+.sidebar h6 { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.8px;
+  color: #6b7280; padding: 0 18px; margin: 18px 0 6px; }
+.sidebar h6:first-child { margin-top: 0; }
+.sidebar a { display: block; padding: 6px 18px; color: #c2c6cc;
+  text-decoration: none; font-size: 0.88rem; border-left: 3px solid transparent; }
+.sidebar a:hover { background: #1e2230; color: #fff; }
+.sidebar a.active { background: #1c2237; color: #fff; border-left-color: var(--sidebar-active); }
+
+main { padding: 28px 36px 80px; max-width: 1000px; }
+main section { padding-top: 14px; margin-bottom: 32px; }
+main h2 { font-size: 1.55rem; font-weight: 600; margin-top: 28px;
+  padding-bottom: 8px; border-bottom: 1px solid #2a2f3e; }
+main h3 { font-size: 1.15rem; font-weight: 600; margin-top: 22px; color: #cfd6e4; }
+main h4 { font-size: 1.0rem; font-weight: 600; margin-top: 16px; color: #b8c1d1; }
+
+.callout { border-left: 4px solid var(--accent); background: #1a223a;
+  padding: 12px 16px; border-radius: 4px; margin: 14px 0; font-size: 0.92rem; }
+.callout.warn { border-left-color: #e0a93a; background: #2a210e; }
+.callout.danger { border-left-color: #e54c5a; background: #2c1518; }
+.callout.tip { border-left-color: #4ec1a0; background: #112620; }
+.callout .label { font-weight: 600; text-transform: uppercase; font-size: 0.7rem;
+  letter-spacing: 0.7px; margin-right: 8px; }
+
+.diagram { background: #161a25; border: 1px solid #2a2f3e; border-radius: 6px;
+  padding: 14px 18px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  white-space: pre; overflow-x: auto; color: #c5cad6; font-size: 0.82rem;
+  line-height: 1.55; margin: 14px 0; }
+
+table.bp-table { font-size: 0.86rem; }
+table.bp-table th { color: #8c93a3; font-weight: 500; }
+table.bp-table td code { font-size: 88%; }
+
+.bp-class { background: #181d2a; border: 1px solid #2a2f3e; border-radius: 6px;
+  padding: 14px 18px; margin: 16px 0; }
+.bp-class .header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px; }
+.bp-class .name { font-weight: 600; font-size: 1.05rem; color: #cfd6e4; font-family: ui-monospace, Menlo, monospace; }
+.bp-class .parent { color: #6b7280; font-size: 0.84rem; }
+.bp-class .responsibility { color: #b3bccc; font-size: 0.9rem; margin-bottom: 10px; }
+
+footer { color: #6b7280; font-size: 0.85rem; text-align: center; padding: 30px;
+  border-top: 1px solid #2a2f3e; margin-top: 60px; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <span class="brand">EOS<span class="accent">Core</span> Game Integration</span>
+  <span class="version-pill">UE 4.27</span>
+  <span class="version-pill">SDK 1.19.0.7</span>
+  <span class="version-pill">Cookbook</span>
+  <div class="ms-auto d-flex gap-3 align-items-center">
+    <a href="../index.html" class="text-decoration-none text-light small">← BP Reference</a>
+    <a href="#quickstart" class="text-decoration-none text-light small">Quick start</a>
+    <a href="#classes" class="text-decoration-none text-light small">Classes</a>
+    <a href="#pitfalls" class="text-decoration-none text-light small">Pitfalls</a>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <h6>Start here</h6>
+    <a href="#overview">Overview</a>
+    <a href="#quickstart">TL;DR flow</a>
+    <a href="#projsetup">Project setup checklist</a>
+
+    <h6>The 5 BP classes</h6>
+    <a href="#bp-gameinstance">BP_EOSGameInstance</a>
+    <a href="#bp-gamemode">BP_EOSGameMode</a>
+    <a href="#bp-playercontroller">BP_EOSPlayerController</a>
+    <a href="#bp-hud">BP_EOSHUD (UMG)</a>
+    <a href="#bp-savegame">BP_EOSSaveGame</a>
+
+    <h6>Subsystems</h6>
+    <a href="#purchases">Cross-platform purchases</a>
+    <a href="#anticheat">Anti-Cheat wiring</a>
+
+    <h6>Operations</h6>
+    <a href="#pitfalls">Common pitfalls</a>
+    <a href="#layout">Content folder layout</a>
+    <a href="#testing">End-to-end PIE test</a>
+    <a href="#nodemap">BP node cheatsheet</a>
+  </aside>
+
+  <main>
+
+    <section id="overview">
+      <h2>Overview</h2>
+      <p>
+        Step-by-step recipe for wiring <strong>EOSCore</strong> into a real multiplayer game project on UE 4.27.
+        Covers all five Blueprint classes you'll touch — <code>UGameInstance</code>, <code>AGameMode</code>,
+        <code>APlayerController</code>, the HUD UMG, and a <code>USaveGame</code> subclass — plus the cross-platform
+        purchase bridge and the Anti-Cheat hookup.
+      </p>
+      <div class="callout tip">
+        <span class="label">Companion docs</span>
+        This is the <em>integration cookbook</em>. The 262-node BP reference is in
+        <a href="../index.html" class="text-info">../index.html</a>.
+      </div>
+    </section>
+
+    <section id="quickstart">
+      <h2>TL;DR — minimum-viable flow</h2>
+      <div class="diagram">GameInstance::Init()       ─► EOS_Platform_Create  (UEOSCoreSubsystem auto-init)
+                              │
+PlayerController::BeginPlay  ─► EOSLoginWithPlatform(EpicGames)
+                              │   (or DevAuth in PIE, Steam/Apple/Google in shipping)
+                              ▼
+              [Bound to OnConnectLoginChanged]
+                              │
+                              ├─► EOSCreateLobby (Permission=PublicAdvertised, MaxMembers=4, EnableVoice=true)
+                              │       └─► EOSJoinRTCRoom via GetLobbyRTCRoomName(LobbyId)
+                              │
+                              ├─► EOSQueryFriends, EOSQueryPresence — populate HUD
+                              │
+                              └─► EOSBeginClientSession(ClientServer)   (if AntiCheat enabled)
+                                       └─► forward bytes via PollOutboundServerMessages each Tick
+
+OnGameEnd / Disconnect      ─► EOSLeaveRTCRoom -> EOSLeaveLobby -> EOSEndClientSession
+SaveGame::Save              ─► UGameplayStatics::SaveGameToSlot</div>
+    </section>
+
+    <section id="projsetup">
+      <h2>Project setup checklist</h2>
+      <ol>
+        <li>Enable the plugin (already done in <code>PluginCore.uproject</code>).</li>
+        <li>Fill credentials in <strong>Project Settings → Plugins → EOSCore → Credentials</strong>.</li>
+        <li>Pick default login platform in <strong>Login Defaults → Default Login Platform</strong>. PC dev: Epic Games (Account Portal).</li>
+        <li>(Optional) Anti-Cheat: drop <code>base_public.cer</code> in <code>Build/NoRedist/</code>, flip <strong>Enable Anti-Cheat</strong>.</li>
+        <li>(Optional) Cross-platform purchases: enable <code>OnlineSubsystemSteam</code> / <code>GooglePlay</code> / <code>IOS</code> per platform.</li>
+      </ol>
+    </section>
+
+    <!-- ============== BP CLASSES ============== -->
+    <section id="classes">
+      <h2>The five Blueprint classes you create</h2>
+      <p class="text-muted">Set <strong>Project Settings → Maps &amp; Modes</strong> → Game Instance Class to <code>BP_EOSGameInstance</code> and Default GameMode to <code>BP_EOSGameMode</code>.</p>
+
+      <!-- GAMEINSTANCE -->
+      <div class="bp-class" id="bp-gameinstance">
+        <div class="header">
+          <span class="name">BP_EOSGameInstance</span>
+          <span class="parent">extends UGameInstance</span>
+        </div>
+        <p class="responsibility"><strong>Owns EOS init early</strong>, wires delegates that survive level transitions, hosts player-session-wide state.</p>
+        <p><strong>Why a GameInstance and not the GameMode?</strong> Auth tokens / Connect PUID / RTC room membership outlive map transitions. <code>UEOSCoreSubsystem</code> is a <code>UGameInstanceSubsystem</code> — it auto-creates inside any GameInstance.</p>
+        <h4>BP graph</h4>
+<pre><code>Event Init
+  └─► UEOSCoreSubsystem auto-inits (settings.bAutoInitialize=true)
+  └─► Get EOSCore Subsystem
+        ├─► Bind Event to OnInitialized       → Custom Event "OnEOSReady"
+        ├─► Bind Event to OnAuthLoginChanged  → Custom Event "OnAuthChanged"
+        └─► Bind Event to OnConnectLoginChanged → Custom Event "OnConnectChanged"
+
+Event OnConnectChanged (ProductUserId)
+  ├─► If settings.bAutoBeginPlayerSession:
+  │       EOSMetricsLibrary::BeginPlayerSession(DisplayName, "", "")
+  ├─► If settings.bAntiCheatEnabled:
+  │       EOSAntiCheatLibrary::BeginClientSession(Mode=ClientServer)
+  └─► Broadcast event "OnPlayerReady" — PlayerController/HUD listen for it</code></pre>
+      </div>
+
+      <!-- GAMEMODE -->
+      <div class="bp-class" id="bp-gamemode">
+        <div class="header">
+          <span class="name">BP_EOSGameMode</span>
+          <span class="parent">extends AGameMode</span>
+        </div>
+        <p class="responsibility"><strong>Host-side session/lobby create</strong> + register joining players.</p>
+<pre><code>Event BeginPlay
+  └─► If Is Server:
+        ├─► EOSCreateLobby (uses settings.DefaultLobby* values)
+        │     ─OnSuccess─► Store LobbyId on GameMode
+        │             └─► (optional) EOSCreateSession for matchmaking layer
+        └─► (clients drive their own EOSJoinLobby from PlayerController)
+
+Event OnPostLogin (override)
+  └─► If Is Server:
+        ├─► EOSSessionsLibrary::RegisterPlayer(SessionName, NewPlayer.PUID)
+        └─► Broadcast lobby state change
+
+Event EndPlay
+  ├─► EOSLobbyLibrary::DestroyLobby(LobbyId)
+  └─► EOSSessionsLibrary::DestroySession(SessionName)</code></pre>
+      </div>
+
+      <!-- PLAYERCONTROLLER -->
+      <div class="bp-class" id="bp-playercontroller">
+        <div class="header">
+          <span class="name">BP_EOSPlayerController</span>
+          <span class="parent">extends APlayerController</span>
+        </div>
+        <p class="responsibility"><strong>Auth, voice push-to-talk, per-player UI.</strong></p>
+<pre><code>Event BeginPlay
+  ├─► If Is Local Controller:
+  │     ├─► EOSLoginWithPlatform
+  │     │     Platform: settings.DefaultLoginPlatform
+  │     │     Token/Id/DisplayName: per-platform values
+  │     │     ─OnSuccess─►
+  │     │           ├─► Create Widget BP_EOSHUD → Add To Viewport
+  │     │           └─► EOSJoinRTCRoom (room name from GetLobbyRTCRoomName)
+  │     │
+  │     └─► Setup Input bindings:
+  │           ├─► "PushToTalk" (V) — Pressed: TransmitToAllRooms(true), Released: false
+  │           ├─► "ToggleSocialOverlay" (Shift+Tab) → EOSUILibrary::ShowSocialOverlay
+  │           └─► "OpenStore" (B) → push WBP_Store if EOSPlatformPurchaseAvailable
+
+Event EndPlay
+  ├─► EOSUpdateRTCSending(CurrentRoom, false)
+  ├─► EOSLeaveRTCRoom(CurrentRoom)
+  └─► EOSAuthLibrary::Logout</code></pre>
+      </div>
+
+      <!-- HUD -->
+      <div class="bp-class" id="bp-hud">
+        <div class="header">
+          <span class="name">WBP_EOSHUD</span>
+          <span class="parent">extends UUserWidget (UMG)</span>
+        </div>
+        <p class="responsibility"><strong>Login UI, friends list, voice indicators, store entry point.</strong></p>
+        <h4>Recommended widget tree</h4>
+<pre><code>WBP_EOSHUD (VerticalBox root)
+├── TopBar (HorizontalBox)
+│   ├── PlayerDisplayName  ← bind to EOSUserInfoLibrary::GetCachedDisplayName
+│   ├── ConnectionStatus   ← bind to "EOS: " + Sub->IsInitialized()
+│   └── ButtonsBox
+│       ├── BtnFriends  → EOSQueryFriends + push WBP_FriendsList
+│       ├── BtnStore    → push WBP_Store
+│       ├── BtnVoice    → push WBP_VoiceSettings
+│       └── BtnOverlay  → EOSUILibrary::ShowSocialOverlay
+│
+├── LobbyPanel (visible if in lobby)
+│   ├── LobbyIdText
+│   ├── PlayersList (ListView, items = WBP_PlayerRow)
+│   └── BtnLeave → EOSLeaveLobby
+│
+└── BottomBar
+    ├── SpeakingIndicator  ← "🔊" if any participant.bSpeaking
+    └── MuteToggle → EOSUpdateRTCSending</code></pre>
+        <div class="callout">
+          <span class="label">WBP_VoiceSettings</span>
+          Runtime voice settings menu (separate from the editor debugger). Mic/speaker combos call
+          <code>EOSRTCLibrary::SetAudioInput/OutputSettings</code>; AEC/NS toggles call
+          <code>EOSRTCLibrary::SetRTCSetting("DisableNoiseSuppression", "true"/"false")</code>.
+          Save chosen device IDs to your runtime <code>BP_EOSSaveGame</code> (NOT to <code>UEOSCoreSettings</code>
+          — that's an editor-config asset).
+        </div>
+      </div>
+
+      <!-- SAVEGAME -->
+      <div class="bp-class" id="bp-savegame">
+        <div class="header">
+          <span class="name">BP_EOSSaveGame</span>
+          <span class="parent">extends USaveGame</span>
+        </div>
+        <p class="responsibility"><strong>Persistent player data:</strong> identity hint, voice device prefs, mute defaults, inventory, unlocked achievements.</p>
+        <h4>Variables</h4>
+<pre><code>FString  LastEpicAccountId;
+FString  LastProductUserId;
+FString  PreferredMicrophoneDeviceId;
+FString  PreferredSpeakerDeviceId;
+bool     bMicMuteOnJoin;
+int32    MasterVolume;
+TArray&lt;FInventoryItem&gt; Inventory;
+TArray&lt;FString&gt;        UnlockedAchievementIds;</code></pre>
+        <h4>GameInstance hooks</h4>
+<pre><code>Event OnPlayerReady (from BP_EOSGameInstance)
+  └─► LoadGameFromSlot("DefaultSave", 0) → cast to BP_EOSSaveGame
+        ├─► If exists:
+        │     ├─► Apply Mic/Speaker DeviceId via EOSRTCLibrary::SetAudioInput/OutputSettings
+        │     ├─► Apply bMicMuteOnJoin into a GameInstance-level bool
+        │     └─► Restore inventory into PlayerState
+        └─► If not exists:
+              └─► Spawn fresh BP_EOSSaveGame with defaults
+
+Event OnApplicationWillDeactivate (FCoreDelegates)
+  └─► SaveGameToSlot(CurrentSave, "DefaultSave", 0)</code></pre>
+      </div>
+    </section>
+
+    <!-- ============== PURCHASES ============== -->
+    <section id="purchases">
+      <h2>Cross-platform purchase flow (OSS bridge)</h2>
+      <p>The bridge auto-routes through whichever store SDK is loaded. <strong>Write the BP graph ONCE.</strong></p>
+<pre><code>WBP_Store::OnConstruct
+  ├─► EOSGetActivePlatformOSS         → show platform name in a debug text block
+  ├─► EOSPlatformPurchaseAvailable    → if false, disable buy buttons
+  ├─► EOSPlatformQueryReceipts(true)  → fill OwnedItems list
+  └─► EOSQueryOffers (Epic) OR EOSQueryOffersById([IDs]) (Google Play)
+        └─► populate offer cards
+
+WBP_OfferCard::OnBuyClicked
+  └─► EOSPlatformPurchase(OfferId, "", 1)
+        ├─OnSuccess(Receipt)─►
+        │     ├─► Add to OwnedItems
+        │     ├─► Grant inventory item to player
+        │     ├─► EOSPlatformFinalizePurchase(Receipt.TransactionId)
+        │     │       ↳ REQUIRED on Google Play within 3 days
+        │     └─► Save the save game
+        └─OnFailure──► toast error</code></pre>
+      <table class="table bp-table table-sm">
+        <thead><tr><th>Platform</th><th>Gotcha</th></tr></thead>
+        <tbody>
+          <tr><td>Google Play</td><td>Skipping <code>EOSPlatformFinalizePurchase</code> within 3 days = auto-refund. Wire it on success unconditionally.</td></tr>
+          <tr><td>App Store</td><td>Receipt validation may need a server round-trip. Always call <code>EOSPlatformQueryReceipts(true)</code> on app launch.</td></tr>
+          <tr><td>Steam</td><td><code>EOSPlatformFinalizePurchase</code> is a no-op (Steamworks acknowledges automatically). Calling it is still safe.</td></tr>
+          <tr><td>Epic Games Store</td><td>Equivalent to <code>EOSRedeemEntitlements</code> from the EOS Ecom path. Use the OSS bridge for consistency.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ============== ANTI-CHEAT ============== -->
+    <section id="anticheat">
+      <h2>Anti-Cheat wiring</h2>
+      <p>EOSCore exposes a scaffold — you wire the bytes through your normal network channel.</p>
+<pre><code>GameMode (dedicated server) BeginPlay:
+  └─► If is dedicated server and AC enabled:
+        ├─► EOS_AntiCheatServer init (C++; not yet a BP node — extend subsystem)
+        └─► Per-tick: drain server-side AC messages, RPC them to clients
+
+PlayerController (client) BeginPlay (after Connect login):
+  └─► EOSAntiCheatLibrary::BeginClientSession(Mode=ClientServer)
+  └─► Bind Tick:
+        ├─► For each msg in PollOutboundServerMessages:
+        │       └─► Server RPC: SendAntiCheatBytesToServer(msg.Data)
+        ├─► If P2P mode: also drain PollOutboundPeerMessages, forward to each peer
+
+ServerRPC "SendAntiCheatBytesToClient" (server → client):
+  └─► On client: EOSAntiCheatLibrary::ReceiveMessageFromServer(bytes)
+
+PlayerController EndPlay:
+  └─► EOSAntiCheatLibrary::EndClientSession</code></pre>
+      <div class="callout warn">
+        <span class="label">Required</span>
+        Drop <code>base_public.cer</code> from EOS Portal → Anti-Cheat → Download integrity keys into
+        <code>Build/NoRedist/base_public.cer</code>. Flip <code>bAntiCheatEnabled</code> in settings.
+        Click <strong>Validate Anti-Cheat Cert</strong> in Project Settings to verify it's at the right path.
+      </div>
+    </section>
+
+    <!-- ============== PITFALLS ============== -->
+    <section id="pitfalls">
+      <h2>Common pitfalls</h2>
+      <table class="table bp-table table-sm">
+        <thead><tr><th>Symptom</th><th>Cause</th><th>Fix</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Login node returns silent failure in PIE</td>
+            <td>Missing credentials or wrong default platform</td>
+            <td>Output Log for <code>LogEOSCore</code>. PIE → use <code>Developer</code> + DevAuthTool token.</td>
+          </tr>
+          <tr>
+            <td>Voice join succeeds but no audio</td>
+            <td><code>bDefaultMicMuted</code> true OR no <code>TransmitToAllRooms(true)</code> call</td>
+            <td>Check Voice Chat settings + push-to-talk binding.</td>
+          </tr>
+          <tr>
+            <td><code>GetLobbyRTCRoomName</code> returns empty</td>
+            <td>Lobby created with <code>bEnableRTCRoom=false</code></td>
+            <td>Set true on <code>EOSCreateLobby</code> or in Settings → Lobby Defaults.</td>
+          </tr>
+          <tr>
+            <td><code>EOSPlatformPurchase</code> "No active OnlineSubsystem"</td>
+            <td>Matching engine plugin not enabled</td>
+            <td>Enable <code>OnlineSubsystemSteam/GooglePlay/IOS</code> + set <code>DefaultPlatformService</code>.</td>
+          </tr>
+          <tr>
+            <td><code>BeginClientSession</code> returns false</td>
+            <td>Cert missing or Connect login not complete</td>
+            <td><strong>Validate Anti-Cheat Cert</strong> button. Gate on <code>OnConnectChanged</code>.</td>
+          </tr>
+          <tr>
+            <td><code>LoadGameFromSlot</code> returns null</td>
+            <td>First-time launch — no save yet</td>
+            <td>Always null-check and spawn a fresh <code>BP_EOSSaveGame</code>.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ============== LAYOUT ============== -->
+    <section id="layout">
+      <h2>Recommended Content/ folder layout</h2>
+<pre><code>Content/
+├── Blueprints/
+│   ├── Core/
+│   │   ├── BP_EOSGameInstance
+│   │   ├── BP_EOSGameMode
+│   │   └── BP_EOSPlayerController
+│   ├── SaveGame/
+│   │   └── BP_EOSSaveGame
+│   └── Pawns/
+│       └── BP_PlayerPawn
+├── UI/
+│   ├── WBP_EOSHUD
+│   ├── WBP_FriendsList
+│   ├── WBP_PlayerRow
+│   ├── WBP_VoiceSettings
+│   ├── WBP_Store
+│   └── WBP_OfferCard
+└── DataAssets/
+    └── DA_GameConfig</code></pre>
+      <p>Set in Project Settings → Maps &amp; Modes:</p>
+      <ul>
+        <li><strong>Default GameMode</strong> → <code>BP_EOSGameMode</code></li>
+        <li><strong>Game Instance Class</strong> → <code>BP_EOSGameInstance</code></li>
+        <li>Inside <code>BP_EOSGameMode</code>: Player Controller Class → <code>BP_EOSPlayerController</code></li>
+        <li>HUD widget is spawned from <code>BP_EOSPlayerController::BeginPlay</code> via Create Widget → Add To Viewport.</li>
+      </ul>
+    </section>
+
+    <!-- ============== TESTING ============== -->
+    <section id="testing">
+      <h2>End-to-end PIE test checklist</h2>
+      <ol>
+        <li>Install Epic Games Launcher; sign in once.</li>
+        <li>Unzip <code>Source/ThirdParty/EOSSDK/DevAuth/EOS_DevAuthTool-win32-x64-1.2.1.zip</code>, run it, log in, name your dev credential <code>DevA</code> on port <code>6547</code>.</li>
+        <li>Project Settings → EOSCore → Login Defaults → Default Login Platform = <strong>DevAuth Tool</strong>.</li>
+        <li>PIE with 2 players (Number of Players = 2, Net Mode = Play As Client).</li>
+        <li>Player 1 logs in with <code>Token=DevA, Id=127.0.0.1:6547</code>. Player 2 with <code>Token=DevB</code> (create in DevAuthTool first).</li>
+        <li>Player 1 (host) creates the lobby; both see Player Count = 2 in HUD.</li>
+        <li>Both press <kbd>V</kbd> (PTT) — speaking indicator lights up.</li>
+        <li>Press <kbd>Shift</kbd>+<kbd>F1</kbd> — EOS Social Overlay appears.</li>
+        <li><strong>Window → EOS Voice Chat Debugger</strong> — verify both players show in participants with live mic state.</li>
+      </ol>
+      <p>If any step fails, cross-reference the pitfalls table above.</p>
+    </section>
+
+    <!-- ============== NODE MAP ============== -->
+    <section id="nodemap">
+      <h2>BP node cheatsheet — where each thing lives</h2>
+      <table class="table bp-table table-sm">
+        <thead><tr><th>What you need</th><th>BP search</th><th>Category</th></tr></thead>
+        <tbody>
+          <tr><td>Log in</td><td><code>EOS Login With Platform</code></td><td>EOS \| Auth</td></tr>
+          <tr><td>Get current player ID</td><td><code>Get EOS Auth Subsystem</code> → <code>Get Local Epic Account Id</code></td><td>EOS \| Auth \| Subsystem</td></tr>
+          <tr><td>Create lobby</td><td><code>EOS Create Lobby</code></td><td>EOS \| Lobby</td></tr>
+          <tr><td>Lobby's voice room</td><td><code>Get Lobby RTC Room Name</code></td><td>EOS \| Lobby \| RTC</td></tr>
+          <tr><td>Friends</td><td><code>EOS Query Friends</code> → <code>Get Friends List</code></td><td>EOS \| Friends</td></tr>
+          <tr><td>Voice — global PTT</td><td><code>Transmit To All Rooms</code></td><td>EOS \| RTC</td></tr>
+          <tr><td>Voice — mute one player</td><td><code>EOS Update RTC Receiving</code></td><td>EOS \| RTC</td></tr>
+          <tr><td>Voice debugger</td><td>Window menu → <strong>EOS Voice Chat Debugger</strong></td><td>(editor-only)</td></tr>
+          <tr><td>Purchase</td><td><code>EOS Platform Purchase</code></td><td>EOS \| Platform</td></tr>
+          <tr><td>Receipts</td><td><code>EOS Platform Query Receipts</code> + <code>EOS Platform Finalize Purchase</code></td><td>EOS \| Platform</td></tr>
+          <tr><td>Save state</td><td><code>Save Game To Slot</code> (engine built-in) + your <code>BP_EOSSaveGame</code></td><td>—</td></tr>
+          <tr><td>Anti-Cheat begin</td><td><code>EOS Begin Client Session</code></td><td>EOS \| AntiCheat</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <p>EOSCore Game Integration Guide · UE 4.27 · EOS SDK 1.19.0.7 · © 2026 Alpha XP. All Rights Reserved.</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+(function () {
+  const links = Array.from(document.querySelectorAll('.sidebar a[href^="#"]'));
+  const sections = links.map(l => document.querySelector(l.getAttribute('href'))).filter(Boolean);
+  function onScroll () {
+    const pos = window.scrollY + 80;
+    let active = 0;
+    for (let i = 0; i < sections.length; i++) if (sections[i].offsetTop <= pos) active = i;
+    links.forEach(l => l.classList.remove('active'));
+    if (links[active]) links[active].classList.add('active');
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+})();
+</script>
+</body>
+</html>

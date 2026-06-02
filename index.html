@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EOSCore Plugin Documentation</title>
+
+<!-- Bootstrap 5 -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+<style>
+:root {
+  --bs-body-bg: #0f1116;
+  --bs-body-color: #d7dadc;
+  --sidebar-bg: #161922;
+  --sidebar-active: #2d6cdf;
+  --topbar-bg: #1a1e29;
+  --code-bg: #1f2330;
+  --accent: #4c8bf5;
+}
+body { font-size: 15px; }
+code, pre { background: var(--code-bg); border-radius: 4px; }
+code { padding: 1px 6px; color: #f7c879; font-size: 90%; }
+pre { padding: 12px 14px; overflow-x: auto; border: 1px solid #2a2f3e; }
+pre code { background: transparent; padding: 0; color: inherit; }
+
+.topbar {
+  background: var(--topbar-bg);
+  border-bottom: 1px solid #2a2f3e;
+  padding: 8px 18px;
+  position: sticky; top: 0; z-index: 1030;
+  display: flex; align-items: center; gap: 14px;
+}
+.topbar .brand { font-weight: 600; font-size: 1.15rem; letter-spacing: 0.3px; }
+.topbar .brand .accent { color: var(--accent); }
+.topbar .version-pill { font-size: 0.72rem; padding: 2px 8px; border-radius: 10px;
+  background: #2a3550; color: #b8cdfa; }
+
+.layout { display: grid; grid-template-columns: 260px 1fr; min-height: calc(100vh - 50px); }
+@media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .sidebar { display:none; } }
+
+.sidebar {
+  background: var(--sidebar-bg);
+  border-right: 1px solid #2a2f3e;
+  padding: 18px 0;
+  position: sticky; top: 50px;
+  height: calc(100vh - 50px); overflow-y: auto;
+}
+.sidebar h6 { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.8px;
+  color: #6b7280; padding: 0 18px; margin: 18px 0 6px; }
+.sidebar h6:first-child { margin-top: 0; }
+.sidebar a { display: block; padding: 6px 18px; color: #c2c6cc;
+  text-decoration: none; font-size: 0.88rem; border-left: 3px solid transparent; }
+.sidebar a:hover { background: #1e2230; color: #fff; }
+.sidebar a.active { background: #1c2237; color: #fff; border-left-color: var(--sidebar-active); }
+.sidebar .badge-count { float: right; color: #6b7280; font-size: 0.72rem; }
+
+main { padding: 28px 36px 80px; max-width: 980px; }
+main section { padding-top: 14px; margin-bottom: 28px; }
+main h2 { font-size: 1.6rem; font-weight: 600; margin-top: 32px;
+  padding-bottom: 8px; border-bottom: 1px solid #2a2f3e; }
+main h3 { font-size: 1.18rem; font-weight: 600; margin-top: 22px; color: #cfd6e4; }
+main h4 { font-size: 1.0rem; font-weight: 600; margin-top: 16px; color: #b8c1d1; }
+
+.bp-table { font-size: 0.86rem; }
+.bp-table th { color: #8c93a3; font-weight: 500; }
+.bp-table td code { font-size: 88%; }
+
+.callout { border-left: 4px solid var(--accent); background: #1a223a;
+  padding: 12px 16px; border-radius: 4px; margin: 14px 0; font-size: 0.92rem; }
+.callout.warn { border-left-color: #e0a93a; background: #2a210e; }
+.callout.danger { border-left-color: #e54c5a; background: #2c1518; }
+.callout.tip { border-left-color: #4ec1a0; background: #112620; }
+.callout .label { font-weight: 600; text-transform: uppercase; font-size: 0.7rem;
+  letter-spacing: 0.7px; margin-right: 8px; }
+
+.pillrow { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+.pill { background: #232a3c; color: #b8c1d1; font-size: 0.78rem; padding: 3px 10px;
+  border-radius: 12px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+.pill.async { background: #1d2c47; color: #94b8ff; }
+.pill.sync  { background: #1d3a2c; color: #94e3b0; }
+
+.faq .accordion-button { background: #1a1e29; color: #d7dadc; }
+.faq .accordion-button:not(.collapsed) { background: #1e2538; color: #fff; box-shadow: none; }
+.faq .accordion-body { background: #161922; color: #c8ccd6; }
+.faq .accordion-item { background: transparent; border-color: #2a2f3e; }
+
+footer { color: #6b7280; font-size: 0.85rem; text-align: center; padding: 30px;
+  border-top: 1px solid #2a2f3e; margin-top: 60px; }
+</style>
+</head>
+<body>
+
+<!-- ============================ TOPBAR ============================ -->
+<header class="topbar">
+  <span class="brand">EOS<span class="accent">Core</span></span>
+  <span class="version-pill">v1.0.0</span>
+  <span class="version-pill">UE 4.27</span>
+  <span class="version-pill">SDK 1.19.0.7</span>
+  <span class="version-pill">262 BP nodes</span>
+  <div class="ms-auto d-flex gap-3 align-items-center">
+    <a href="#overview"     class="text-decoration-none text-light small">Overview</a>
+    <a href="#installation" class="text-decoration-none text-light small">Setup</a>
+    <a href="#voice"        class="text-decoration-none text-light small">Voice</a>
+    <a href="#purchases"    class="text-decoration-none text-light small">Purchases</a>
+    <a href="#faq"          class="text-decoration-none text-light small">FAQ</a>
+  </div>
+</header>
+
+<!-- ============================ LAYOUT ============================ -->
+<div class="layout">
+
+  <!-- ======================= SIDEBAR ======================= -->
+  <aside class="sidebar">
+    <h6>Getting started</h6>
+    <a href="#overview">Overview</a>
+    <a href="#installation">Installation &amp; settings</a>
+    <a href="#unified-login">Unified login</a>
+    <a href="#testing">PIE / dev testing</a>
+
+    <h6>Identity</h6>
+    <a href="#auth">Auth <span class="badge-count">10</span></a>
+    <a href="#connect">Connect <span class="badge-count">10</span></a>
+
+    <h6>Multiplayer</h6>
+    <a href="#sessions">Sessions <span class="badge-count">15</span></a>
+    <a href="#lobby">Lobby <span class="badge-count">18</span></a>
+    <a href="#p2p">P2P <span class="badge-count">2</span></a>
+
+    <h6>Social</h6>
+    <a href="#friends">Friends <span class="badge-count">10</span></a>
+    <a href="#presence">Presence <span class="badge-count">3</span></a>
+    <a href="#userinfo">UserInfo <span class="badge-count">3</span></a>
+    <a href="#customInvites">Custom Invites <span class="badge-count">13</span></a>
+    <a href="#ui">UI Overlay <span class="badge-count">3</span></a>
+
+    <h6>Progression &amp; economy</h6>
+    <a href="#achievements">Achievements <span class="badge-count">5</span></a>
+    <a href="#stats">Stats <span class="badge-count">4</span></a>
+    <a href="#leaderboards">Leaderboards <span class="badge-count">6</span></a>
+    <a href="#ecom">Ecom <span class="badge-count">13</span></a>
+    <a href="#purchases">OSS purchase bridge <span class="badge-count">6</span></a>
+    <a href="#progression">Progression Snapshot <span class="badge-count">4</span></a>
+
+    <h6>Storage</h6>
+    <a href="#storage">Player Data <span class="badge-count">10</span></a>
+    <a href="#titleStorage">Title Storage <span class="badge-count">4</span></a>
+
+    <h6>Voice &amp; AntiCheat</h6>
+    <a href="#voice">RTC voice <span class="badge-count">19</span></a>
+    <a href="#voiceDebugger">Voice debugger</a>
+    <a href="#anticheat">Anti-Cheat <span class="badge-count">9</span></a>
+
+    <h6>Moderation &amp; ops</h6>
+    <a href="#reports">Reports <span class="badge-count">2</span></a>
+    <a href="#sanctions">Sanctions <span class="badge-count">2</span></a>
+    <a href="#metrics">Metrics <span class="badge-count">2</span></a>
+    <a href="#mods">Mods <span class="badge-count">9</span></a>
+    <a href="#integratedPlatform">Integrated Platform <span class="badge-count">4</span></a>
+
+    <h6>Reference</h6>
+    <a href="#subsystems">Per-category subsystems</a>
+    <a href="#faq">FAQ</a>
+    <a href="#troubleshooting">Troubleshooting</a>
+    <a href="#layout">Source layout</a>
+  </aside>
+
+  <!-- ======================= MAIN ======================= -->
+  <main>
+
+    <!-- ============== OVERVIEW ============== -->
+    <section id="overview">
+      <h2>Overview</h2>
+      <p>
+        <strong>EOSCore</strong> is a UE4.27 plugin that wraps Epic Online Services SDK 1.19.0.7 with a comprehensive Blueprint surface — <strong>262 BP nodes</strong> across 26 categories, including voice chat (RTC), an editor-side voice debugger, an Anti-Cheat scaffold, and an OSS bridge that routes purchases through whichever store (Epic Games / Steam / Google Play / App Store) is active at runtime.
+      </p>
+      <p>
+        It's a <em>direct EOS SDK wrapper</em>, not a custom <code>OnlineSubsystem</code> implementation — meaning you call EOS interfaces directly from Blueprint instead of going through UE4's OSS layer. (The OSS bridge for purchases is the one exception, since it needs to route across multiple stores.)
+      </p>
+
+      <div class="row mt-3">
+        <div class="col-md-4">
+          <div class="callout">
+            <span class="label">2 modules</span><br>
+            <code>EOSCore</code> (Runtime) + <code>EOSCoreEditor</code> (Editor) — editor-only widget for voice debugging won't ship with packaged builds.
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="callout tip">
+            <span class="label">5 platforms</span><br>
+            Win64, Mac, Linux, iOS, Android. Console (PS / Xbox / Switch) require NDA SDK drops separately.
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="callout">
+            <span class="label">21 sub-subsystems</span><br>
+            <code>UEOSAuthSubsystem</code>, <code>UEOSSessionsSubsystem</code>, etc — typed Blueprint accessors per category.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== INSTALLATION ============== -->
+    <section id="installation">
+      <h2>Installation &amp; settings</h2>
+
+      <h3>1. Enable the plugin</h3>
+      <p>EOSCore is already listed in <code>PluginCore.uproject</code>. In a new project add:</p>
+<pre><code>"Plugins": [
+  { "Name": "EOSCore", "Enabled": true }
+]</code></pre>
+
+      <h3>2. Fill credentials in Project Settings</h3>
+      <p><strong>Project Settings → Plugins → EOSCore → Credentials</strong>:</p>
+      <table class="table bp-table table-sm">
+        <thead><tr><th>Field</th><th>Source</th></tr></thead>
+        <tbody>
+          <tr><td><code>ProductId</code></td><td>Epic Developer Portal → Product Settings</td></tr>
+          <tr><td><code>SandboxId</code></td><td>Dev / Stage / Live sandbox for this build</td></tr>
+          <tr><td><code>DeploymentId</code></td><td>Deployment for the selected sandbox</td></tr>
+          <tr><td><code>ClientId</code> / <code>ClientSecret</code></td><td>Credential pair for this build</td></tr>
+          <tr><td><code>EncryptionKey</code></td><td>64-hex string used for PlayerDataStorage encryption</td></tr>
+        </tbody>
+      </table>
+
+      <h3>3. (Optional) Voice Chat section</h3>
+      <p>Persistent device selection saves to <code>DefaultEngine.ini</code> and ships with packaged builds:</p>
+      <ul>
+        <li><code>DefaultMicrophoneDeviceId</code> — empty = system default</li>
+        <li><code>DefaultSpeakerDeviceId</code> — empty = system default</li>
+        <li><code>bDefaultMicMuted</code> — start muted on JoinRoom</li>
+        <li><code>bPlatformAEC</code> — OS-level acoustic echo cancellation</li>
+        <li><code>RTCBackgroundMode</code> — leave rooms vs keep alive when backgrounded</li>
+      </ul>
+
+      <h3>4. (Optional) Anti-Cheat section</h3>
+      <ol>
+        <li>Download AC certificates from <strong>Epic Developer Portal → Anti-Cheat → Download integrity keys</strong>.</li>
+        <li>Place <code>base_public.cer</code> and <code>base_private.key</code> in <code>Build/NoRedist/</code> (create the folder if missing).</li>
+        <li>Flip <code>bAntiCheatEnabled = true</code> in settings.</li>
+        <li>Make sure <strong>network authentication is enabled</strong> in Project Settings (default in new projects).</li>
+      </ol>
+
+      <h3>5. Build</h3>
+<pre><code>"C:/Program Files/Epic Games/UE_4.27/Engine/Build/BatchFiles/Build.bat" \
+  PluginCoreEditor Win64 Development \
+  -Project="C:/AlphaCore/ASUS/MY-Cmd/UE4-Plugin/PluginCore/PluginCore.uproject" \
+  -WaitMutex -FromMsBuild</code></pre>
+      <div class="callout warn">
+        <span class="label">Note</span>
+        UE4.27 cannot hot-reload plugin DLLs. After any <code>.cpp</code> change: fully close the editor, delete <code>Plugins/EOSCore/{Binaries,Intermediate}</code>, rebuild, reopen.
+      </div>
+    </section>
+
+    <!-- ============== UNIFIED LOGIN ============== -->
+    <section id="unified-login">
+      <h2>Unified login</h2>
+      <p>The simplest path. One BP node with a platform dropdown:</p>
+      <p><code>EOSLoginWithPlatform(Platform, Token, Id?, DisplayName?)</code></p>
+      <div class="pillrow">
+        <span class="pill async">Async</span>
+        <span class="pill">Category: EOS|Auth</span>
+        <span class="pill">Search: "Login With Platform"</span>
+      </div>
+      <p>The <code>Platform</code> dropdown shows:</p>
+      <table class="table bp-table table-sm">
+        <thead><tr><th>Platform</th><th>What goes in <code>Token</code></th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>Epic Games (Account Portal)</td><td>—</td><td>Opens browser. Auth→Connect chained.</td></tr>
+          <tr><td>Steam (App Ticket)</td><td>Steamworks app ticket</td><td>Connect-only.</td></tr>
+          <tr><td>Google Play</td><td>Google id token</td><td>Connect-only.</td></tr>
+          <tr><td>Apple</td><td>Apple id token</td><td>Connect-only.</td></tr>
+          <tr><td>Discord / Nintendo / PSN / Xbox Live / OpenID / itch.io / Amazon</td><td>platform-specific access token</td><td>Connect-only.</td></tr>
+          <tr><td>Device ID (Anonymous)</td><td>—</td><td>Call <code>EOSCreateDeviceId</code> once first.</td></tr>
+          <tr><td>DevAuth Tool</td><td>credential name from DevAuthTool</td><td>Set <code>Id = "127.0.0.1:6547"</code>.</td></tr>
+        </tbody>
+      </table>
+      <p>On success, <code>UEOSCoreSubsystem::GetLocalEpicAccountId()</code> and <code>GetLocalProductUserId()</code> are populated. The <code>OnInitialized</code>, <code>OnAuthLoginChanged</code>, and <code>OnConnectLoginChanged</code> multicast delegates fire.</p>
+    </section>
+
+    <!-- ============== TESTING ============== -->
+    <section id="testing">
+      <h2>PIE / dev testing</h2>
+      <ol>
+        <li>Install Epic Games Launcher and sign in once.</li>
+        <li>Unzip <code>Source/ThirdParty/EOSSDK/DevAuth/EOS_DevAuthTool-win32-x64-1.2.1.zip</code> anywhere.</li>
+        <li>Run the tool, click <strong>Login</strong>, give it a credential name like <code>DevUser1</code>. Default port is <code>6547</code>.</li>
+        <li>In PIE call <code>EOSLoginWithPlatform(Developer, Token="DevUser1", Id="127.0.0.1:6547")</code>.</li>
+        <li>Press <kbd>Shift</kbd>+<kbd>F1</kbd> in PIE — the EOS Social Overlay appears (only after successful Auth).</li>
+        <li>For RTC: open <strong>Window → EOS Voice Chat Debugger</strong>.</li>
+      </ol>
+    </section>
+
+    <!-- ============== AUTH ============== -->
+    <section id="auth">
+      <h2>Auth</h2>
+      <p>Epic Games account authentication. Use <code>EOSLoginWithPlatform</code> for the simplified path.</p>
+      <div class="pillrow">
+        <span class="pill async">EOSAuthLogin</span>
+        <span class="pill async">EOSLoginWithPlatform</span>
+        <span class="pill async">EOSDeletePersistentAuth</span>
+        <span class="pill async">EOSVerifyUserAuth</span>
+        <span class="pill async">EOSVerifyIdToken</span>
+        <span class="pill async">EOSRefreshAuth</span>
+        <span class="pill async">EOSQueryAuthIdToken</span>
+        <span class="pill sync">Logout</span>
+        <span class="pill sync">IsLoggedIn</span>
+        <span class="pill sync">GetLocalEpicAccountId</span>
+        <span class="pill sync">CopyUserAuthAccessToken</span>
+        <span class="pill sync">CopyEpicIdToken</span>
+      </div>
+    </section>
+
+    <!-- ============== CONNECT ============== -->
+    <section id="connect">
+      <h2>Connect (Product User)</h2>
+      <p>Game-side identity that bridges Epic, Steam, Google, etc. into a single Product User ID.</p>
+      <div class="pillrow">
+        <span class="pill async">EOSConnectLogin</span>
+        <span class="pill async">EOSCreateConnectUser</span>
+        <span class="pill async">EOSLinkAccount</span>
+        <span class="pill async">EOSCreateDeviceId</span>
+        <span class="pill async">EOSDeleteDeviceId</span>
+        <span class="pill async">EOSQueryProductUserIdMappings</span>
+        <span class="pill sync">GetLocalProductUserId</span>
+        <span class="pill sync">IsConnected</span>
+        <span class="pill sync">ListConnectedExternalAccountIds</span>
+        <span class="pill sync">GetEpicAccountForProductUser</span>
+        <span class="pill sync">GetProductUserExternalAccountCount</span>
+      </div>
+      <div class="callout danger">
+        <span class="label">Known issue</span>
+        Continuance token flow is broken from pure BP. <code>EOSCreateConnectUser</code> / <code>EOSLinkAccount</code> need a live <code>EOS_ContinuanceToken*</code> which has no <code>_FromString</code>. C++-only <code>*FromHandle(void*)</code> siblings exist as workaround.
+      </div>
+    </section>
+
+    <!-- ============== SESSIONS ============== -->
+    <section id="sessions">
+      <h2>Sessions</h2>
+      <p>Player-hosted matchmaking sessions (advertised via EOS service).</p>
+      <div class="pillrow">
+        <span class="pill async">EOSCreateSession</span>
+        <span class="pill async">EOSFindSessions</span>
+        <span class="pill async">EOSJoinSession</span>
+        <span class="pill async">EOSUpdateSession</span>
+        <span class="pill async">EOSSendSessionInvite</span>
+        <span class="pill async">EOSQuerySessionInvites</span>
+        <span class="pill async">EOSRejectSessionInvite</span>
+        <span class="pill async">EOSJoinSessionByInvite</span>
+        <span class="pill sync">DestroySession / StartSession / EndSession</span>
+        <span class="pill sync">RegisterPlayer / UnregisterPlayer</span>
+      </div>
+    </section>
+
+    <!-- ============== LOBBY ============== -->
+    <section id="lobby">
+      <h2>Lobby</h2>
+      <p>Same shape as Sessions but designed for pre-game / persistent groups. Lobbies can auto-create an associated RTC voice room.</p>
+      <div class="pillrow">
+        <span class="pill async">EOSCreateLobby</span>
+        <span class="pill async">EOSFindLobbies</span>
+        <span class="pill async">EOSJoinLobby</span>
+        <span class="pill async">EOSUpdateLobby</span>
+        <span class="pill async">EOSSendLobbyInvite</span>
+        <span class="pill async">EOSQueryLobbyInvites</span>
+        <span class="pill async">EOSRejectLobbyInvite</span>
+        <span class="pill async">EOSJoinLobbyByInvite</span>
+        <span class="pill sync">LeaveLobby / DestroyLobby</span>
+        <span class="pill sync">Kick / Promote member</span>
+        <span class="pill sync">GetLobbyMembers</span>
+        <span class="pill sync">SetLobbyAttribute</span>
+        <span class="pill sync">GetLobbyRTCRoomName</span>
+        <span class="pill sync">IsLobbyRTCRoomConnected</span>
+      </div>
+    </section>
+
+    <!-- ============== P2P ============== -->
+    <section id="p2p">
+      <h2>P2P</h2>
+      <p>EOS-relayed peer-to-peer packets.</p>
+      <div class="pillrow">
+        <span class="pill sync">SendPacket(target, reliability, channel, bytes)</span>
+        <span class="pill sync">ReceivePacket</span>
+      </div>
+    </section>
+
+    <!-- ============== FRIENDS ============== -->
+    <section id="friends">
+      <h2>Friends</h2>
+      <div class="pillrow">
+        <span class="pill async">EOSQueryFriends</span>
+        <span class="pill async">EOSSendFriendInvite</span>
+        <span class="pill async">EOSAcceptFriendInvite</span>
+        <span class="pill async">EOSRejectFriendInvite</span>
+        <span class="pill sync">GetFriendsList</span>
+        <span class="pill sync">GetFriendStatus</span>
+      </div>
+    </section>
+
+    <!-- ============== PRESENCE ============== -->
+    <section id="presence">
+      <h2>Presence</h2>
+      <div class="pillrow">
+        <span class="pill async">EOSQueryPresence</span>
+        <span class="pill sync">SetPresence(Status, RichText)</span>
+      </div>
+    </section>
+
+    <!-- ============== USER INFO ============== -->
+    <section id="userinfo">
+      <h2>UserInfo</h2>
+      <div class="pillrow">
+        <span class="pill async">EOSQueryUserInfo</span>
+        <span class="pill sync">GetCachedDisplayName</span>
+      </div>
+    </section>
+
+    <!-- ============== CUSTOM INVITES ============== -->
+    <section id="customInvites">
+      <h2>Custom Invites</h2>
+      <p>Modern app-defined invite path independent of sessions / lobby.</p>
+      <div class="pillrow">
+        <span class="pill async">EOSSendCustomInvite</span>
+        <span class="pill async">EOSAcceptCustomInvite</span>
+        <span class="pill async">EOSRejectCustomInvite</span>
+        <span class="pill sync">RegisterForCustomInviteEvents</span>
+        <span class="pill sync">GetPendingCustomInvites</span>
+        <span class="pill sync">UEOSCustomInvitesEventReceiver::OnCustomInviteReceived</span>
+      </div>
+      <p>The receiver UObject singleton exposes a <code>BlueprintAssignable</code> multicast delegate; bind it from any BP that needs invite-received events. Polling alternative via <code>GetPendingCustomInvites</code>.</p>
+    </section>
+
+    <!-- ============== UI ============== -->
+    <section id="ui">
+      <h2>EOS Overlay UI</h2>
+      <div class="pillrow">
+        <span class="pill sync">ShowSocialOverlay</span>
+        <span class="pill sync">HideOverlay</span>
+        <span class="pill sync">IsOverlayVisible</span>
+      </div>
+      <p>Programmatic control over the EOS Social Overlay (the friends list / invite UI). The overlay also appears via <kbd>Shift</kbd>+<kbd>F1</kbd> by default once authenticated.</p>
+    </section>
+
+    <!-- ============== ACHIEVEMENTS ============== -->
+    <section id="achievements">
+      <h2>Achievements</h2>
+      <div class="pillrow">
+        <span class="pill async">EOSUnlockAchievement</span>
+        <span class="pill async">EOSQueryAchievementDefs</span>
+        <span class="pill async">EOSQueryPlayerAchievements</span>
+      </div>
+    </section>
+
+    <!-- ============== STATS ============== -->
+    <section id="stats">
+      <h2>Stats</h2>
+      <div class="pillrow">
+        <span class="pill async">EOSIngestStat(Name, Amount)</span>
+        <span class="pill async">EOSQueryStats(Names)</span>
+      </div>
+    </section>
+
+    <!-- ============== LEADERBOARDS ============== -->
+    <section id="leaderboards">
+      <h2>Leaderboards</h2>
+      <div class="pillrow">
+        <span class="pill async">EOSQueryLeaderboardRanks</span>
+        <span class="pill async">EOSQueryLeaderboardDefinitions</span>
+        <span class="pill async">EOSQueryLeaderboardUserScores</span>
+      </div>
+    </section>
+
+    <!-- ============== ECOM ============== -->
+    <section id="ecom">
+      <h2>Ecom (Epic Games Store)</h2>
+      <p>Direct EOS Ecom integration — Epic Games Store only. For multi-platform purchases see the <a href="#purchases">OSS bridge</a>.</p>
+      <div class="pillrow">
+        <span class="pill async">EOSQueryOffers</span>
+        <span class="pill async">EOSQueryOffersById</span>
+        <span class="pill async">EOSCheckout</span>
+        <span class="pill async">EOSQueryOwnership</span>
+        <span class="pill async">EOSRedeemEntitlements</span>
+        <span class="pill async">EOSQueryEntitlements</span>
+        <span class="pill sync">EOSGetReceipts</span>
+      </div>
+      <p>The OSS-v1 <code>FinalizeReceiptValidationInfo</code> call maps to <code>EOSRedeemEntitlements</code> — pass entitlement IDs from <code>EOSGetReceipts</code>.</p>
+      <div class="callout warn">
+        <span class="label">Note</span>
+        <code>FEOSEcomCheckoutEntry::Quantity</code> is currently a no-op (SDK 1.19.0.7 <code>EOS_Ecom_CheckoutEntry</code> has no Quantity field). Submit duplicate entries for Quantity &gt; 1.
+      </div>
+    </section>
+
+    <!-- ============== OSS PURCHASE BRIDGE ============== -->
+    <section id="purchases">
+      <h2>OSS purchase bridge — cross-platform billing</h2>
+      <p>
+        <code>EOSCore</code> ships with a small bridge that routes purchases through the engine's <code>IOnlinePurchase</code> for whichever Online Subsystem is loaded.
+        You get Epic Games / Steam / Google Play / App Store from one BP graph without branching.
+      </p>
+      <div class="pillrow">
+        <span class="pill async">EOSPlatformPurchase(OfferId, Namespace, Quantity)</span>
+        <span class="pill sync">EOSPlatformQueryReceipts(bRestoreReceipts)</span>
+        <span class="pill sync">EOSPlatformFinalizePurchase(TransactionId)</span>
+        <span class="pill sync">EOSGetActivePlatformOSS</span>
+        <span class="pill sync">EOSPlatformPurchaseAvailable</span>
+      </div>
+
+      <h3>Enable per-platform engine OSS plugins</h3>
+      <table class="table bp-table table-sm">
+        <thead><tr><th>Platform</th><th>Enable in <code>.uproject</code></th><th>Plus</th></tr></thead>
+        <tbody>
+          <tr><td>Win64 EGS</td><td><code>OnlineSubsystemEOS</code> (auto via EOSCore)</td><td>—</td></tr>
+          <tr><td>Steam</td><td><code>OnlineSubsystemSteam</code></td><td>SteamDevAppId in <code>DefaultEngine.ini</code></td></tr>
+          <tr><td>Google Play</td><td><code>OnlineSubsystemGooglePlay</code></td><td>Play Console product IDs</td></tr>
+          <tr><td>iOS App Store</td><td><code>OnlineSubsystemIOS</code></td><td>App Store Connect IAP setup</td></tr>
+        </tbody>
+      </table>
+      <div class="callout warn">
+        <span class="label">Important — Google Play</span>
+        After a successful purchase you <strong>must</strong> call <code>EOSPlatformFinalizePurchase(TransactionId)</code> within 3 days or the purchase is automatically refunded.
+      </div>
+    </section>
+
+    <!-- ============== PROGRESSION ============== -->
+    <section id="progression">
+      <h2>Progression Snapshot</h2>
+      <p>Server-side snapshot of arbitrary progression key/value pairs. Used for analytics / cross-save bridging.</p>
+      <div class="pillrow">
+        <span class="pill async">EOSSubmitProgressionSnapshot(entries)</span>
+        <span class="pill async">EOSDeleteProgressionSnapshot</span>
+      </div>
+    </section>
+
+    <!-- ============== STORAGE ============== -->
+    <section id="storage">
+      <h2>Player Data Storage</h2>
+      <p>Per-player cloud-saved files. Encrypted with the <code>EncryptionKey</code> in settings.</p>
+      <div class="pillrow">
+        <span class="pill async">EOSReadPlayerFile</span>
+        <span class="pill async">EOSWritePlayerFile</span>
+        <span class="pill async">EOSQueryPlayerFileList</span>
+        <span class="pill async">EOSDeletePlayerFile</span>
+        <span class="pill async">EOSDuplicatePlayerFile</span>
+        <span class="pill sync">CopyPlayerFileMetadata</span>
+      </div>
+    </section>
+
+    <!-- ============== TITLE STORAGE ============== -->
+    <section id="titleStorage">
+      <h2>Title Storage</h2>
+      <p>Read-only server-published files (game assets, remote configs).</p>
+      <div class="pillrow">
+        <span class="pill async">EOSQueryTitleFileList(Tags)</span>
+        <span class="pill async">EOSReadTitleFile</span>
+      </div>
+    </section>
+
+    <!-- ============== VOICE ============== -->
+    <section id="voice">
+      <h2>RTC — Voice chat</h2>
+      <p>Full Epic RTC interface exposure: join voice rooms, mute self/others, switch devices, get the participant list with talking indicators.</p>
+      <div class="pillrow">
+        <span class="pill async">EOSJoinRTCRoom</span>
+        <span class="pill async">EOSLeaveRTCRoom</span>
+        <span class="pill async">EOSUpdateRTCSending</span>
+        <span class="pill async">EOSUpdateRTCReceiving</span>
+        <span class="pill async">EOSUpdateRTCParticipantVolume</span>
+        <span class="pill async">EOSBlockRTCParticipant</span>
+        <span class="pill sync">GetAudioInputDevices</span>
+        <span class="pill sync">GetAudioOutputDevices</span>
+        <span class="pill sync">SetAudioInputSettings</span>
+        <span class="pill sync">SetAudioOutputSettings</span>
+        <span class="pill sync">GetRoomParticipants</span>
+        <span class="pill sync">GetJoinedRoomNames</span>
+        <span class="pill sync">IsRoomJoined</span>
+        <span class="pill sync">TransmitToAllRooms(bSend)</span>
+        <span class="pill sync">SetRTCSetting(key,value)</span>
+        <span class="pill sync">SetRoomSetting(room,key,value)</span>
+      </div>
+
+      <h3>Push-to-talk</h3>
+      <p>Wire <code>TransmitToAllRooms(true)</code> to a key-press event and <code>TransmitToAllRooms(false)</code> to release. The same call applies across every joined room.</p>
+
+      <h3>Audio processing knobs</h3>
+      <p>Set these <em>before</em> JoinRoom for them to take effect:</p>
+<pre><code>SetRTCSetting("DisableEchoCancelation",  "false")  // = AEC on
+SetRTCSetting("DisableNoiseSuppression", "false")  // = NS on
+SetRTCSetting("DisableAutoGainControl",  "false")  // = AGC on
+SetRTCSetting("DisableDtx",              "false")  // = DTX on (saves bandwidth)</code></pre>
+
+      <h3>Joining a lobby's auto-voice room</h3>
+<pre><code>1. EOSCreateLobby(bEnableRTCRoom = true)
+2. const FString Room = GetLobbyRTCRoomName(LobbyId)
+3. Use Room with GetRoomParticipants / SendSessionInvite / etc.</code></pre>
+
+      <div class="callout danger">
+        <span class="label">JoinToken</span>
+        Joining a standalone RTC room requires a <code>ParticipantToken</code> minted by <strong>your backend</strong> via the EOS REST API — the client SDK cannot mint it itself. Lobby auto-rooms don't need this (they're joined transparently when you join the lobby).
+      </div>
+    </section>
+
+    <!-- ============== VOICE DEBUGGER ============== -->
+    <section id="voiceDebugger">
+      <h2>Voice debugger (editor)</h2>
+      <p>The <code>EOSCoreEditor</code> module registers a Slate widget that lives in the editor only (not shipped):</p>
+      <p><strong>Open via:</strong></p>
+      <ul>
+        <li><strong>Window → EOS Voice Chat Debugger</strong> menu entry</li>
+        <li>Console command <code>EOSCore.ShowVoiceDebugger</code> (works in PIE too)</li>
+      </ul>
+      <p>Shows live state: current room selector, joined-room participant list (with talking indicators, mute/block buttons per row), local mic-mute toggle, input/output device combo boxes. Polls subsystem state every 0.5s via an active timer.</p>
+    </section>
+
+    <!-- ============== ANTI-CHEAT ============== -->
+    <section id="anticheat">
+      <h2>Anti-Cheat scaffold</h2>
+      <p>EAC client-side wiring. <strong>Scaffold</strong> means the message bridge and session lifecycle are exposed; you still need to plumb the outbound messages through your game's network channel.</p>
+      <div class="pillrow">
+        <span class="pill sync">IsAntiCheatAvailable</span>
+        <span class="pill sync">BeginClientSession(Mode)</span>
+        <span class="pill sync">EndClientSession</span>
+        <span class="pill sync">ReceiveMessageFromServer(bytes)</span>
+        <span class="pill sync">RegisterPeer / UnregisterPeer</span>
+        <span class="pill sync">ReceiveMessageFromPeer(handle, bytes)</span>
+        <span class="pill sync">PollOutboundServerMessages</span>
+        <span class="pill sync">PollOutboundPeerMessages</span>
+      </div>
+
+      <h3>Flow (Client-Server mode)</h3>
+      <ol>
+        <li><code>EOSConnectLogin</code> succeeds → local PUID available.</li>
+        <li><code>BeginClientSession(ClientServer)</code>.</li>
+        <li>Each tick: drain <code>PollOutboundServerMessages</code> → forward bytes over your normal server transport.</li>
+        <li>When your server sends AC bytes back to the client → call <code>ReceiveMessageFromServer(bytes)</code>.</li>
+        <li>On disconnect: <code>EndClientSession</code>.</li>
+      </ol>
+      <p>P2P mode also requires <code>RegisterPeer</code> per remote player + symmetric peer-message bridging.</p>
+    </section>
+
+    <!-- ============== REPORTS ============== -->
+    <section id="reports">
+      <h2>Reports</h2>
+      <p>Player behavior reports (moderation).</p>
+      <div class="pillrow">
+        <span class="pill async">EOSSendPlayerReport(target, category, message, context)</span>
+      </div>
+      <p>Category mapping (BP enum is broader than SDK enum): <code>Harassment / HateSpeech / Profanity → VerbalAbuse</code>, <code>NameViolation → OffensiveProfile</code>, <code>ChildAbuse → Other</code>.</p>
+    </section>
+
+    <!-- ============== SANCTIONS ============== -->
+    <section id="sanctions">
+      <h2>Sanctions</h2>
+      <div class="pillrow">
+        <span class="pill async">EOSQueryActivePlayerSanctions(target)</span>
+      </div>
+    </section>
+
+    <!-- ============== METRICS ============== -->
+    <section id="metrics">
+      <h2>Metrics</h2>
+      <div class="pillrow">
+        <span class="pill sync">BeginPlayerSession(displayName, serverIp, gameSessionId)</span>
+        <span class="pill sync">EndPlayerSession</span>
+      </div>
+    </section>
+
+    <!-- ============== MODS ============== -->
+    <section id="mods">
+      <h2>Mods</h2>
+      <p>Desktop game-mod manager (Epic Mod Marketplace).</p>
+      <div class="pillrow">
+        <span class="pill async">EOSEnumerateMods(Type)</span>
+        <span class="pill async">EOSInstallMod(modId, bRemoveAfterExit)</span>
+        <span class="pill async">EOSUninstallMod(modId)</span>
+        <span class="pill async">EOSUpdateMod(modId)</span>
+        <span class="pill sync">GetEnumeratedMods(Type)</span>
+      </div>
+    </section>
+
+    <!-- ============== INTEGRATED PLATFORM ============== -->
+    <section id="integratedPlatform">
+      <h2>Integrated Platform</h2>
+      <p>Notify EOS about the player's login state on the integrated platform (Steam, EGS, etc).</p>
+      <div class="pillrow">
+        <span class="pill async">EOSSetIntegratedPlatformLoginStatus</span>
+        <span class="pill async">EOSFinalizeDeferredUserLogout</span>
+      </div>
+    </section>
+
+    <!-- ============== SUBSYSTEMS ============== -->
+    <section id="subsystems">
+      <h2>Per-category subsystems</h2>
+      <p>21 thin <code>UGameInstanceSubsystem</code> proxies — typed Blueprint accessors per domain. Each exposes:</p>
+      <ul>
+        <li><code>Get(WorldContextObject)</code> — static, returns the subsystem</li>
+        <li><code>IsReady()</code> — pure, true if the underlying EOS interface handle is available</li>
+      </ul>
+      <p>The proxies delegate to <code>UEOSCoreSubsystem</code> which owns the platform handle. They exist for BP discoverability — "search 'Get EOS Sessions Subsystem'" surfaces the right subsystem cleanly.</p>
+      <pre><code>UEOSAuthSubsystem, UEOSConnectSubsystem, UEOSFriendsSubsystem,
+UEOSPresenceSubsystem, UEOSSessionsSubsystem, UEOSLobbySubsystem,
+UEOSUserInfoSubsystem, UEOSAchievementsSubsystem, UEOSStatsSubsystem,
+UEOSLeaderboardsSubsystem, UEOSP2PSubsystem, UEOSEcomSubsystem,
+UEOSPlayerDataStorageSubsystem, UEOSTitleStorageSubsystem,
+UEOSUISubsystem, UEOSMetricsSubsystem, UEOSCustomInvitesSubsystem,
+UEOSReportsSubsystem, UEOSSanctionsSubsystem, UEOSRTCSubsystem,
+UEOSAntiCheatSubsystem</code></pre>
+    </section>
+
+    <!-- ============== FAQ ============== -->
+    <section id="faq">
+      <h2>FAQ</h2>
+      <div class="accordion faq" id="faqAccordion">
+
+        <div class="accordion-item">
+          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+            Where do I get ProductId / SandboxId / ClientId?</button></h2>
+          <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+            <div class="accordion-body">From the <strong>Epic Developer Portal</strong> → your Product → Product Settings (Product ID), Sandboxes (Sandbox/Deployment IDs), Client Credentials (Client ID / Secret). Paste into Project Settings → Plugins → EOSCore → Credentials.</div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+            Why does my BP login node just fail silently in PIE?</button></h2>
+          <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+            <div class="accordion-body">
+              Most common: missing or invalid credentials. Check the Output Log for <code>LogEOSCore</code> errors. For PIE specifically the easiest auth flow is <strong>DevAuthTool</strong> — run the tool, log in, pick a credential name, then use <code>EOSLoginWithPlatform(Developer, Token="YourName", Id="127.0.0.1:6547")</code>.
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+            How do I test voice chat without two computers?</button></h2>
+          <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+            <div class="accordion-body">Pass <code>bEnableEcho = true</code> to <code>EOSJoinRTCRoom</code> — the EOS server echoes your audio back so you can validate the round trip with a single client.</div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+            EOSPlatformPurchase fails with "No active OnlineSubsystem"</button></h2>
+          <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+            <div class="accordion-body">
+              The matching engine plugin isn't enabled. For Steam: enable <code>OnlineSubsystemSteam</code> in <code>.uproject</code> AND set <code>[OnlineSubsystem] DefaultPlatformService=Steam</code> + <code>SteamDevAppId=...</code> in <code>DefaultEngine.ini</code>. Then <code>EOSGetActivePlatformOSS()</code> should return "STEAM".
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
+            Anti-Cheat won't initialize — why?</button></h2>
+          <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+            <div class="accordion-body">
+              Check that (a) <code>base_public.cer</code> is at the path specified in <code>AntiCheatCertPath</code> (default <code>Build/NoRedist/base_public.cer</code>), (b) network authentication is enabled in Project Settings, (c) <code>EOSConnectLogin</code> succeeded before you called <code>BeginClientSession</code>, and (d) you activated an EAC build in the EOS portal.
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq6">
+            Continuance token flow — my Connect login returns InvalidUser. Now what?</button></h2>
+          <div id="faq6" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+            <div class="accordion-body">
+              Known limitation. The BP <code>EOSCreateConnectUser</code> / <code>EOSLinkAccount</code> nodes take a token <em>string</em>, but EOS continuance tokens are opaque pointers with no <code>_FromString</code> API. Workaround: call the C++-only <code>*FromHandle(void*)</code> siblings from a custom function bound to <code>UEOSConnectLoginAsync::OnContinuanceRequired</code> in C++.
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq7">
+            Why is FEOSEcomCheckoutEntry.Quantity ignored?</button></h2>
+          <div id="faq7" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+            <div class="accordion-body">
+              EOS SDK 1.19.0.7's <code>EOS_Ecom_CheckoutEntry</code> struct only has <code>OfferId</code> — there's no Quantity field. The BP struct exposes Quantity for forward compatibility, but for now submit duplicate entries to buy multiples.
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq8">
+            How do I rebuild after editing a .cpp?</button></h2>
+          <div id="faq8" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+            <div class="accordion-body">
+              UE4.27 doesn't hot-reload plugin DLLs reliably. (1) Fully close the editor (verify <code>UE4Editor.exe</code> is gone from Task Manager), (2) delete <code>Plugins/EOSCore/{Binaries,Intermediate}</code>, (3) run <code>Build.bat PluginCoreEditor Win64 Development -Project=...</code>, (4) reopen the project.
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq9">
+            Why are headers under Public/Core/, Public/Auth/, etc. instead of flat?</button></h2>
+          <div id="faq9" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+            <div class="accordion-body">
+              Organizational. Each EOS interface gets its own subfolder so Solution Explorer / IDE browsers don't dump 100+ files in a flat list. The Build.cs sets <code>bLegacyPublicIncludePaths = true</code> so unqualified <code>#include "EOSCoreTypes.h"</code> still resolves no matter which subfolder the including file lives in.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== TROUBLESHOOTING ============== -->
+    <section id="troubleshooting">
+      <h2>Troubleshooting</h2>
+
+      <h3>Build errors</h3>
+      <ul>
+        <li><strong>"Cannot open include file: 'EOSCoreTypes.h'"</strong> — your Build.cs is missing <code>bLegacyPublicIncludePaths = true</code>. Dependent modules need this too.</li>
+        <li><strong>Duplicate function definition under unity build</strong> — two .cpp files have the same file-scope <code>static</code> helper (typical: <code>AccountIdToString</code>). Rename one with a file-unique prefix.</li>
+        <li><strong>"Target is up to date" but no DLL produced</strong> — check that <code>EOSCore</code> is <code>"Enabled": true</code> in your <code>.uproject</code>.</li>
+      </ul>
+
+      <h3>Runtime issues</h3>
+      <ul>
+        <li><strong>EOS Overlay (Shift+F1) doesn't appear</strong> — requires successful Auth login. Check <code>UEOSCoreSettings.bEnableOverlay</code> is true. Renderer must be D3D11/D3D12 (UE4.27 default).</li>
+        <li><strong>RTC initialization fails on Windows</strong> — <code>xaudio2_9redist.dll</code> not at the path passed in <code>EOS_Windows_RTCOptions.XAudio29DllPath</code>. The subsystem resolves this via <code>IPluginManager::FindPlugin("EOSCore")->GetBaseDir() + "/Binaries/Win64/xaudio2_9redist.dll"</code>. Verify the DLL was staged.</li>
+        <li><strong>SetAudioInputSettings returns failure</strong> — requires a valid Connect-logged-in PUID. Make sure <code>EOSConnectLogin</code> completed first; the subsystem applies persisted device settings in <code>SetLocalProductUserId</code>.</li>
+      </ul>
+
+      <h3>SDK version quirks (1.19.0.7)</h3>
+      <ul>
+        <li><code>EOS_SAT_STRING</code> doesn't exist as an enum value — use <code>EOS_AT_STRING</code> (uppercase) or the macro alias <code>EOS_SAT_String</code> (CamelCase).</li>
+        <li><code>EOS_ECustomInviteFinalizeResult</code> enum doesn't exist — use <code>EOS_EResult::EOS_Success</code> for accept, <code>EOS_Canceled</code> for reject.</li>
+        <li><code>EOS_ACCCP_iOS</code> has a lowercase 'i' (most other platform enum values are uppercase).</li>
+        <li><code>EOS_Auth_VerifyIdTokenCallbackInfo</code> has no AccountId field — decode the JWT <code>sub</code> claim client-side if you need it.</li>
+        <li><code>EOS_PlayerDataStorage_GetFileMetadataCount</code> returns <code>EOS_EResult</code> with out-param count; <code>EOS_TitleStorage_GetFileMetadataCount</code> returns <code>uint32_t</code> directly.</li>
+      </ul>
+    </section>
+
+    <!-- ============== SOURCE LAYOUT ============== -->
+    <section id="layout">
+      <h2>Source layout</h2>
+<pre><code>Source/EOSCore/
+├── EOSCore.Build.cs         (bLegacyPublicIncludePaths = true)
+├── Public/
+│   ├── Core/                Module, Settings, Subsystem, Types
+│   ├── Auth/                AuthLibrary + AuthSubsystem + LoginWithPlatform + …
+│   ├── Connect/             ConnectLibrary + DeviceId / Mappings / etc.
+│   ├── Sessions/            SessionsLibrary + Find/Join/Update/Invite
+│   ├── Lobby/               LobbyLibrary + same shape + RTC-room helpers
+│   ├── Friends/ Presence/ UserInfo/
+│   ├── Achievements/ Stats/ Leaderboards/
+│   ├── Ecom/                Offers, Checkout, Ownership, Receipts
+│   ├── Storage/ TitleStorage/
+│   ├── P2P/ UI/ Metrics/
+│   ├── CustomInvites/ Reports/ Sanctions/
+│   ├── RTC/                 EOSRTCLibrary.h holds all 7 voice async classes
+│   ├── AntiCheat/
+│   ├── Mods/ IntegratedPlatform/ Progression/
+│   └── Platform/            OSS bridge for cross-platform purchases
+└── Private/                 (mirrors Public)
+
+Source/EOSCoreEditor/
+├── EOSCoreEditor.Build.cs
+├── Public/
+│   ├── EOSCoreEditor.h
+│   └── SEOSVoiceChatDebugger.h
+└── Private/
+    ├── EOSCoreEditor.cpp    Module + Window menu + console command
+    └── SEOSVoiceChatDebugger.cpp</code></pre>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <p>EOSCore · UE4.27 · EOS SDK 1.19.0.7 · 262 Blueprint nodes · © 2026 Alpha XP. All Rights Reserved.</p>
+</footer>
+
+<!-- Bootstrap JS (for FAQ accordion) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Highlight the active sidebar link based on scroll position -->
+<script>
+(function () {
+  const links = Array.from(document.querySelectorAll('.sidebar a[href^="#"]'));
+  const sections = links.map(l => document.querySelector(l.getAttribute('href'))).filter(Boolean);
+  function onScroll () {
+    const pos = window.scrollY + 80;
+    let activeIdx = 0;
+    for (let i = 0; i < sections.length; i++) {
+      if (sections[i].offsetTop <= pos) activeIdx = i;
+    }
+    links.forEach(l => l.classList.remove('active'));
+    if (links[activeIdx]) links[activeIdx].classList.add('active');
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+})();
+</script>
+
+</body>
+</html>
