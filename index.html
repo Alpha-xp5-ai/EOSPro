@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EOSCore Plugin Documentation</title>
+<title>EOSpro Plugin Documentation</title>
 
 <!-- Bootstrap 5 -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -39,6 +39,13 @@ pre code { background: transparent; padding: 0; color: inherit; }
 
 .layout { display: grid; grid-template-columns: 260px 1fr; min-height: calc(100vh - 50px); }
 @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .sidebar { display:none; } }
+
+.sidebar-toggle { background: none; border: 1px solid #2a3346; color: #c2c6cc; border-radius: 6px;
+  padding: 3px 10px; cursor: pointer; font-size: 1.05rem; line-height: 1; display: inline-flex; }
+.sidebar-toggle:hover { background: #222a3a; color: #fff; }
+body.sidebar-collapsed .layout { grid-template-columns: 1fr; }
+body.sidebar-collapsed .sidebar { display: none; }
+body.sidebar-collapsed main { max-width: 1100px; margin-left: auto; margin-right: auto; }
 
 .sidebar {
   background: var(--sidebar-bg);
@@ -88,19 +95,157 @@ main h4 { font-size: 1.0rem; font-weight: 600; margin-top: 16px; color: #b8c1d1;
 
 footer { color: #6b7280; font-size: 0.85rem; text-align: center; padding: 30px;
   border-top: 1px solid #2a2f3e; margin-top: 60px; }
+
+/* ===== FAB hero / store thumbnail ===== */
+.fab-hero { position: relative; overflow: hidden; border-radius: 12px;
+  margin: 4px 0 34px; border: 1px solid #2a2f3e;
+  background: radial-gradient(1100px 380px at 10% -15%, #1d3568 0%, rgba(29,53,104,0) 60%),
+              linear-gradient(135deg, #0f1320 0%, #141a2c 45%, #101a30 100%); }
+.fab-hero-inner { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 18px;
+  align-items: center; padding: 34px 36px; min-height: 360px; }
+@media (max-width: 820px) { .fab-hero-inner { grid-template-columns: 1fr; } .fab-hero-art { display: none; } }
+.fab-logo { font-size: 3.3rem; font-weight: 800; letter-spacing: -0.5px; line-height: 1; color: #fff; }
+.fab-logo span { color: var(--accent); }
+.fab-tag { margin-top: 10px; font-size: 1.18rem; font-weight: 600; color: #e7ecf5; }
+.fab-sub { margin-top: 10px; color: #aab4c6; font-size: 0.95rem; max-width: 540px; }
+.fab-stats { display: flex; gap: 28px; margin: 22px 0 16px; flex-wrap: wrap; }
+.fab-stats div { display: flex; flex-direction: column; }
+.fab-stats b { font-size: 1.8rem; font-weight: 800; color: #fff; line-height: 1; }
+.fab-stats span { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.6px;
+  color: #8b93a6; margin-top: 5px; }
+.fab-badges { display: inline-block; font-family: ui-monospace, monospace; font-size: 0.78rem;
+  color: #9fb6e6; background: #182037; border: 1px solid #283556; padding: 6px 12px; border-radius: 20px; }
+.fab-platforms { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.plat { display: inline-flex; align-items: center; gap: 7px; font-size: 0.85rem; font-weight: 500;
+  color: #c7d4ec; background: #182037; border: 1px solid #2c3a5e; padding: 7px 14px; border-radius: 22px; }
+.plat i { font-size: 1.1rem; color: #7fa8f0; line-height: 1; }
+.plat.ue i { color: #9b8cff; }
+.fab-hero-art { position: relative; height: 320px; }
+.fab-hero-art img { position: absolute; width: 62%; border-radius: 8px;
+  border: 1px solid #36507e; box-shadow: 0 18px 42px rgba(0,0,0,0.55); }
+.fab-hero-art img:nth-child(1) { top: 4%;  left: 1%;  transform: rotate(-6deg); z-index: 1; }
+.fab-hero-art img:nth-child(2) { top: 22%; left: 32%; transform: rotate(3deg);  z-index: 3; }
+.fab-hero-art img:nth-child(3) { top: 50%; left: 9%;  transform: rotate(-2deg); z-index: 2; }
+
+/* full-screen welcome variant (no sidebar / no topbar) */
+.fab-hero.welcome { min-height: 100vh; border-radius: 0; border: none; margin: 0;
+  display: flex; flex-direction: column; justify-content: center;
+  position: relative; overflow: hidden; }
+/* faint blurred screenshot montage as a textured backdrop */
+.fab-hero.welcome::before { content: ""; position: absolute; inset: 0;
+  background: url("BP_EOSpro_Catalog/EOS_Lobby.png") center center / cover no-repeat;
+  opacity: 0.05; filter: blur(3px); pointer-events: none; }
+.fab-hero.welcome .fab-hero-inner { position: relative; z-index: 1; flex: 1 1 auto;
+  align-content: center; grid-template-columns: 1fr 1.08fr; padding: 40px 7vw; gap: 30px; }
+.fab-hero.welcome .fab-logo { font-size: 4.6rem; }
+.fab-hero.welcome .fab-tag { font-size: 1.4rem; }
+.fab-hero.welcome .fab-sub { font-size: 1.05rem; max-width: 600px; }
+.fab-hero.welcome .fab-stats b { font-size: 2.1rem; }
+/* clean aligned screenshot grid (no overlap, even gaps) */
+.fab-hero.welcome .fab-hero-art { height: auto; margin-top: 0; background: none;
+  display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: 112px; gap: 12px; }
+.fab-hero.welcome .fab-hero-art img { position: static; width: 100%; height: 100%; transform: none;
+  object-fit: cover; object-position: top center; border: 1px solid #2c3a5e; border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.45); transition: transform .18s ease, box-shadow .18s ease; }
+.fab-hero.welcome .fab-hero-art img:hover { transform: translateY(-3px); box-shadow: 0 14px 28px rgba(0,0,0,0.55); }
+/* first tile is featured: spans 2 columns + 2 rows for a balanced, editorial layout */
+.fab-hero.welcome .fab-hero-art img:nth-child(1) { grid-column: span 2; grid-row: span 2; height: 100%; }
+.enter-btn { align-self: center; margin: 8px 0 42px; display: inline-flex; align-items: center; gap: 9px;
+  background: var(--accent); color: #07101f; font-weight: 700; font-size: 1.02rem;
+  text-decoration: none; padding: 12px 26px; border-radius: 30px;
+  box-shadow: 0 10px 26px rgba(76,139,245,0.40); transition: transform .15s ease, box-shadow .15s ease; }
+.enter-btn:hover { transform: translateY(-2px); box-shadow: 0 14px 32px rgba(76,139,245,0.55); color: #07101f; }
+.enter-btn i { font-size: 1.2rem; }
+
+/* ===== screenshot gallery ===== */
+.shot-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 14px; margin-top: 16px; }
+.shot { margin: 0; background: #141824; border: 1px solid #283143; border-radius: 8px; overflow: hidden; }
+.shot a { display: block; background: #0c0f17; }
+.shot img { width: 100%; height: 150px; object-fit: cover; object-position: top center;
+  display: block; transition: transform .2s ease; }
+.shot:hover img { transform: scale(1.05); }
+.shot figcaption { padding: 7px 10px; font-size: 0.82rem; color: #c2c9d6;
+  border-top: 1px solid #283143; font-family: ui-monospace, monospace; }
+
+/* category cards (image + explanation of the nodes) */
+.cat-list { display: flex; flex-direction: column; gap: 14px; margin-top: 18px; }
+.cat-card { display: grid; grid-template-columns: 300px 1fr; gap: 20px; align-items: center;
+  background: #141824; border: 1px solid #283143; border-radius: 10px; padding: 14px 16px; }
+.cat-card > a { display: block; background: #0c0f17; border-radius: 6px; overflow: hidden; }
+.cat-card img { width: 100%; max-height: 180px; object-fit: cover; object-position: top center;
+  display: block; border: 1px solid #2a3346; border-radius: 6px; transition: transform .2s ease; }
+.cat-card > a:hover img { transform: scale(1.03); }
+.cat-card h3 { margin: 0 0 7px; font-size: 1.18rem; color: #eaf0fb; border: none; padding: 0; }
+.cat-card h3 .n { font-size: 0.72rem; font-weight: 600; color: #8ea2c8; background: #1d2740;
+  border: 1px solid #2c3a5e; padding: 2px 8px; border-radius: 10px; margin-left: 8px; vertical-align: middle; }
+.cat-card p { margin: 0; color: #aeb6c6; font-size: 0.93rem; line-height: 1.5; }
+.cat-card p code { font-size: 86%; }
+@media (max-width: 720px) { .cat-card { grid-template-columns: 1fr; } }
+
+/* gallery pagination */
+.pager { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-top: 22px; }
+.pg-btn { background: #1a2030; color: #c2c9d6; border: 1px solid #2a3346; border-radius: 6px;
+  padding: 5px 12px; font-size: 0.85rem; cursor: pointer; min-width: 38px; }
+.pg-btn:hover:not(:disabled) { background: #243049; color: #fff; }
+.pg-btn.active { background: var(--sidebar-active); color: #fff; border-color: var(--sidebar-active); }
+.pg-btn:disabled { opacity: 0.4; cursor: default; }
 </style>
 </head>
 <body>
 
+<!-- ==================== WELCOME / FAB STORE HERO ==================== -->
+<!-- Full-screen welcome splash, no sidebar, no topbar. FAB submission: screenshot -->
+<!-- this screen at 1920x1080 (16:9) for the marketplace listing thumbnail. -->
+<section id="hero" class="fab-hero welcome">
+  <div class="fab-hero-inner">
+    <div class="fab-hero-text">
+      <div class="fab-logo">EOS<span>pro</span></div>
+      <div class="fab-tag">Epic Online Services for Unreal Engine — fully Blueprint</div>
+      <p class="fab-sub">Auth &middot; Connect &middot; Sessions &middot; Lobby &middot; Voice (RTC) &middot; Friends &middot; Achievements &middot; Stats &middot; Leaderboards &middot; Ecom &middot; Storage &middot; Anti-Cheat &middot; P2P &mdash; and more, with no C++ required.</p>
+      <div class="fab-stats">
+        <div><b>262</b><span>Blueprint nodes</span></div>
+        <div><b>26</b><span>categories</span></div>
+        <div><b>5</b><span>platforms</span></div>
+        <div><b>1.19</b><span>EOS SDK</span></div>
+      </div>
+      <div class="fab-platforms">
+        <span class="plat ue"><i class="bi bi-controller"></i> UE 4.27</span>
+        <span class="plat"><i class="bi bi-windows"></i> Win64</span>
+        <span class="plat"><i class="bi bi-apple"></i> Mac</span>
+        <span class="plat"><i class="bi bi-ubuntu"></i> Linux</span>
+        <span class="plat"><i class="bi bi-phone"></i> iOS</span>
+        <span class="plat"><i class="bi bi-android2"></i> Android</span>
+      </div>
+    </div>
+    <div class="fab-hero-art">
+      <img src="BP_EOSpro_Catalog/EOS_Auth.png" alt="EOSpro Auth Blueprint nodes">
+      <img src="BP_EOSpro_Catalog/EOS_Sessions.png" alt="EOSpro Sessions Blueprint nodes">
+      <img src="BP_EOSpro_Catalog/EOS_Lobby.png" alt="EOSpro Lobby Blueprint nodes">
+      <img src="BP_EOSpro_Catalog/EOS_RTC.png" alt="EOSpro RTC voice Blueprint nodes">
+      <img src="BP_EOSpro_Catalog/EOS_Friends.png" alt="EOSpro Friends Blueprint nodes">
+      <img src="BP_EOSpro_Catalog/EOS_Ecom.png" alt="EOSpro Ecom Blueprint nodes">
+      <img src="BP_EOSpro_Catalog/EOS_Achievements.png" alt="EOSpro Achievements Blueprint nodes">
+      <img src="BP_EOSpro_Catalog/EOS_Leaderboards.png" alt="EOSpro Leaderboards Blueprint nodes">
+      <img src="BP_EOSpro_Catalog/EOS_Stats.png" alt="EOSpro Stats Blueprint nodes">
+      <img src="BP_EOSpro_Catalog/EOS_Storage.png" alt="EOSpro Player Data Storage Blueprint nodes">
+      <img src="BP_EOSpro_Catalog/EOS_Connect.png" alt="EOSpro Connect Blueprint nodes">
+    </div>
+  </div>
+  <a href="#overview" class="enter-btn">Open the documentation <i class="bi bi-arrow-down-circle-fill"></i></a>
+</section>
+
 <!-- ============================ TOPBAR ============================ -->
 <header class="topbar">
-  <span class="brand">EOS<span class="accent">Core</span></span>
+  <button id="sidebarToggle" class="sidebar-toggle" title="Toggle sidebar" aria-label="Toggle sidebar"><i class="bi bi-list"></i></button>
+  <span class="brand">EOS<span class="accent">pro</span></span>
   <span class="version-pill">v1.0.0</span>
   <span class="version-pill">UE 4.27</span>
   <span class="version-pill">SDK 1.19.0.7</span>
   <span class="version-pill">262 BP nodes</span>
   <div class="ms-auto d-flex gap-3 align-items-center">
     <a href="#overview"     class="text-decoration-none text-light small">Overview</a>
+    <a href="#gallery"      class="text-decoration-none text-light small">Gallery</a>
     <a href="#installation" class="text-decoration-none text-light small">Setup</a>
     <a href="#voice"        class="text-decoration-none text-light small">Voice</a>
     <a href="#purchases"    class="text-decoration-none text-light small">Purchases</a>
@@ -115,6 +260,8 @@ footer { color: #6b7280; font-size: 0.85rem; text-align: center; padding: 30px;
   <aside class="sidebar">
     <h6>Getting started</h6>
     <a href="#overview">Overview</a>
+    <a href="#gallery">Node gallery <span class="badge-count">50</span></a>
+    <a href="#explained">Nodes explained <span class="badge-count">26</span></a>
     <a href="#installation">Installation &amp; settings</a>
     <a href="#unified-login">Unified login</a>
     <a href="#testing">PIE / dev testing</a>
@@ -173,7 +320,7 @@ footer { color: #6b7280; font-size: 0.85rem; text-align: center; padding: 30px;
     <section id="overview">
       <h2>Overview</h2>
       <p>
-        <strong>EOSCore</strong> is a UE4.27 plugin that wraps Epic Online Services SDK 1.19.0.7 with a comprehensive Blueprint surface — <strong>262 BP nodes</strong> across 26 categories, including voice chat (RTC), an editor-side voice debugger, an Anti-Cheat scaffold, and an OSS bridge that routes purchases through whichever store (Epic Games / Steam / Google Play / App Store) is active at runtime.
+        <strong>EOSpro</strong> is a UE4.27 plugin that wraps Epic Online Services SDK 1.19.0.7 with a comprehensive Blueprint surface — <strong>262 BP nodes</strong> across 26 categories, including voice chat (RTC), an editor-side voice debugger, an Anti-Cheat scaffold, and an OSS bridge that routes purchases through whichever store (Epic Games / Steam / Google Play / App Store) is active at runtime.
       </p>
       <p>
         It's a <em>direct EOS SDK wrapper</em>, not a custom <code>OnlineSubsystem</code> implementation — meaning you call EOS interfaces directly from Blueprint instead of going through UE4's OSS layer. (The OSS bridge for purchases is the one exception, since it needs to route across multiple stores.)
@@ -183,7 +330,7 @@ footer { color: #6b7280; font-size: 0.85rem; text-align: center; padding: 30px;
         <div class="col-md-4">
           <div class="callout">
             <span class="label">2 modules</span><br>
-            <code>EOSCore</code> (Runtime) + <code>EOSCoreEditor</code> (Editor) — editor-only widget for voice debugging won't ship with packaged builds.
+            <code>EOSpro</code> (Runtime) + <code>EOSproEditor</code> (Editor) — editor-only widget for voice debugging won't ship with packaged builds.
           </div>
         </div>
         <div class="col-md-4">
@@ -201,18 +348,246 @@ footer { color: #6b7280; font-size: 0.85rem; text-align: center; padding: 30px;
       </div>
     </section>
 
+    <!-- ============== NODE GALLERY ============== -->
+    <section id="gallery">
+      <h2>Blueprint node gallery</h2>
+      <p>
+        Every node EOSpro exposes, grouped by category exactly as it appears in the Blueprint editor.
+        Each image is a real screenshot of the bundled <code>BP_EOSpro_Catalog</code> Blueprint
+        (in <code>Documentation/BP_EOSpro_Catalog/</code>). Click any thumbnail to open it full-size.
+      </p>
+      <div class="shot-grid" id="shot-grid">
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_Achievements.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Achievements.png" alt="Achievements Blueprint nodes"></a><figcaption>Achievements</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_Achievements_Subsystem.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Achievements_Subsystem.png" alt="Achievements — Subsystem Blueprint nodes"></a><figcaption>Achievements — Subsystem</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_AntiCheat.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_AntiCheat.png" alt="AntiCheat Blueprint nodes"></a><figcaption>AntiCheat</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_AntiCheat_Subsystem.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_AntiCheat_Subsystem.png" alt="AntiCheat — Subsystem Blueprint nodes"></a><figcaption>AntiCheat — Subsystem</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_Auth.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Auth.png" alt="Auth Blueprint nodes"></a><figcaption>Auth</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_Auth_Subsystem.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Auth_Subsystem.png" alt="Auth — Subsystem Blueprint nodes"></a><figcaption>Auth — Subsystem</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_Connect.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Connect.png" alt="Connect Blueprint nodes"></a><figcaption>Connect</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_Connect_Subsystem.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Connect_Subsystem.png" alt="Connect — Subsystem Blueprint nodes"></a><figcaption>Connect — Subsystem</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_Core.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Core.png" alt="Core Blueprint nodes"></a><figcaption>Core</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_CustomInvites.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_CustomInvites.png" alt="CustomInvites Blueprint nodes"></a><figcaption>CustomInvites</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_CustomInvites_Subsystem.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_CustomInvites_Subsystem.png" alt="CustomInvites — Subsystem Blueprint nodes"></a><figcaption>CustomInvites — Subsystem</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_Ecom.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Ecom.png" alt="Ecom Blueprint nodes"></a><figcaption>Ecom</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_Ecom_Subsystem.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Ecom_Subsystem.png" alt="Ecom — Subsystem Blueprint nodes"></a><figcaption>Ecom — Subsystem</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_Events.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Events.png" alt="Events Blueprint nodes"></a><figcaption>Events</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_Friends.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Friends.png" alt="Friends Blueprint nodes"></a><figcaption>Friends</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_Friends_Subsystem.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Friends_Subsystem.png" alt="Friends — Subsystem Blueprint nodes"></a><figcaption>Friends — Subsystem</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_IntegratedPlatform.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_IntegratedPlatform.png" alt="IntegratedPlatform Blueprint nodes"></a><figcaption>IntegratedPlatform</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_Leaderboards.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Leaderboards.png" alt="Leaderboards Blueprint nodes"></a><figcaption>Leaderboards</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_Leaderboards_Subsystem.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Leaderboards_Subsystem.png" alt="Leaderboards — Subsystem Blueprint nodes"></a><figcaption>Leaderboards — Subsystem</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_Lobby.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Lobby.png" alt="Lobby Blueprint nodes"></a><figcaption>Lobby</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_Lobby_RTC.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Lobby_RTC.png" alt="Lobby — RTC Blueprint nodes"></a><figcaption>Lobby — RTC</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_Lobby_Subsystem.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Lobby_Subsystem.png" alt="Lobby — Subsystem Blueprint nodes"></a><figcaption>Lobby — Subsystem</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_Metrics.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Metrics.png" alt="Metrics Blueprint nodes"></a><figcaption>Metrics</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_Metrics_Subsystem.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Metrics_Subsystem.png" alt="Metrics — Subsystem Blueprint nodes"></a><figcaption>Metrics — Subsystem</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_Mods.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Mods.png" alt="Mods Blueprint nodes"></a><figcaption>Mods</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_P2P.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_P2P.png" alt="P2P Blueprint nodes"></a><figcaption>P2P</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_P2P_Subsystem.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_P2P_Subsystem.png" alt="P2P — Subsystem Blueprint nodes"></a><figcaption>P2P — Subsystem</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_Platform.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Platform.png" alt="Platform Blueprint nodes"></a><figcaption>Platform</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_Presence.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Presence.png" alt="Presence Blueprint nodes"></a><figcaption>Presence</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_Presence_Subsystem.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Presence_Subsystem.png" alt="Presence — Subsystem Blueprint nodes"></a><figcaption>Presence — Subsystem</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_Progression.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Progression.png" alt="Progression Blueprint nodes"></a><figcaption>Progression</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_RTC.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_RTC.png" alt="RTC Blueprint nodes"></a><figcaption>RTC</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_RTC_Settings.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_RTC_Settings.png" alt="RTC — Settings Blueprint nodes"></a><figcaption>RTC — Settings</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_RTC_Subsystem.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_RTC_Subsystem.png" alt="RTC — Subsystem Blueprint nodes"></a><figcaption>RTC — Subsystem</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_Reports.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Reports.png" alt="Reports Blueprint nodes"></a><figcaption>Reports</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_Reports_Subsystem.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Reports_Subsystem.png" alt="Reports — Subsystem Blueprint nodes"></a><figcaption>Reports — Subsystem</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_Sanctions.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Sanctions.png" alt="Sanctions Blueprint nodes"></a><figcaption>Sanctions</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_Sanctions_Subsystem.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Sanctions_Subsystem.png" alt="Sanctions — Subsystem Blueprint nodes"></a><figcaption>Sanctions — Subsystem</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_Sessions.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Sessions.png" alt="Sessions Blueprint nodes"></a><figcaption>Sessions</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_Sessions_Subsystem.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Sessions_Subsystem.png" alt="Sessions — Subsystem Blueprint nodes"></a><figcaption>Sessions — Subsystem</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_Stats.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Stats.png" alt="Stats Blueprint nodes"></a><figcaption>Stats</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_Stats_Subsystem.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Stats_Subsystem.png" alt="Stats — Subsystem Blueprint nodes"></a><figcaption>Stats — Subsystem</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_Storage.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Storage.png" alt="Storage Blueprint nodes"></a><figcaption>Storage</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_Storage_Subsystem.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Storage_Subsystem.png" alt="Storage — Subsystem Blueprint nodes"></a><figcaption>Storage — Subsystem</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_TitleStorage.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_TitleStorage.png" alt="TitleStorage Blueprint nodes"></a><figcaption>TitleStorage</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_TitleStorage_Subsystem.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_TitleStorage_Subsystem.png" alt="TitleStorage — Subsystem Blueprint nodes"></a><figcaption>TitleStorage — Subsystem</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_UI.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_UI.png" alt="UI Blueprint nodes"></a><figcaption>UI</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_UI_Subsystem.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_UI_Subsystem.png" alt="UI — Subsystem Blueprint nodes"></a><figcaption>UI — Subsystem</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_UserInfo.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_UserInfo.png" alt="UserInfo Blueprint nodes"></a><figcaption>UserInfo</figcaption></figure>
+        <figure class="shot"><a href="BP_EOSpro_Catalog/EOS_UserInfo_Subsystem.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_UserInfo_Subsystem.png" alt="UserInfo — Subsystem Blueprint nodes"></a><figcaption>UserInfo — Subsystem</figcaption></figure>
+      </div>
+      <nav id="gallery-pager" class="pager" aria-label="Gallery pagination"></nav>
+    </section>
+
+    <!-- ============== NODES EXPLAINED ============== -->
+    <section id="explained">
+      <h2>Blueprint nodes — explained</h2>
+      <p>What each category does, with the screenshot of its nodes. Click any image to open it full-size.</p>
+      <div class="cat-list">
+
+        <div class="cat-card">
+          <a href="BP_EOSpro_Catalog/EOS_Auth.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Auth.png" alt="Auth Blueprint nodes"></a>
+          <div><h3>Auth <span class="n">10 nodes</span></h3>
+          <p>Epic Games account authentication. Use <code>EOSLoginWithPlatform</code> for the simplified path across Epic&nbsp;Games / Steam / Google / Apple / Device / DevAuth, then read <code>GetLocalEpicAccountId</code>. Also covers logout, token refresh and ID-token verification.</p></div>
+        </div>
+
+        <div class="cat-card">
+          <a href="BP_EOSpro_Catalog/EOS_Connect.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Connect.png" alt="Connect Blueprint nodes"></a>
+          <div><h3>Connect <span class="n">10 nodes</span></h3>
+          <p>Maps an authenticated account to a <strong>Product User ID (PUID)</strong> — the identity every other interface uses. Create connect users, link external accounts, and create device IDs for anonymous login.</p></div>
+        </div>
+
+        <div class="cat-card">
+          <a href="BP_EOSpro_Catalog/EOS_Sessions.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Sessions.png" alt="Sessions Blueprint nodes"></a>
+          <div><h3>Sessions <span class="n">15 nodes</span></h3>
+          <p>Server/peer game sessions — <code>EOSCreateSession</code>, find by attributes, join, update, and send invites. The matchmaking surface for session-based games, plus register/unregister players.</p></div>
+        </div>
+
+        <div class="cat-card">
+          <a href="BP_EOSpro_Catalog/EOS_Lobby.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Lobby.png" alt="Lobby Blueprint nodes"></a>
+          <div><h3>Lobby <span class="n">18 nodes</span></h3>
+          <p>Player-owned lobbies with attributes, member management and built-in <strong>RTC voice rooms</strong>. Create / find / join / update / invite, plus kick &amp; promote members and read the lobby roster.</p></div>
+        </div>
+
+        <div class="cat-card">
+          <a href="BP_EOSpro_Catalog/EOS_P2P.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_P2P.png" alt="P2P Blueprint nodes"></a>
+          <div><h3>P2P <span class="n">2 nodes</span></h3>
+          <p>Direct peer-to-peer packets over EOS relays — <code>SendPacket</code> / <code>ReceivePacket</code>. NAT-punched transport for custom networking without a dedicated server.</p></div>
+        </div>
+
+        <div class="cat-card">
+          <a href="BP_EOSpro_Catalog/EOS_Friends.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Friends.png" alt="Friends Blueprint nodes"></a>
+          <div><h3>Friends <span class="n">10 nodes</span></h3>
+          <p>Query the Epic friends list, send / accept / reject friend invites, and read each friend's status (online, away, in-game).</p></div>
+        </div>
+
+        <div class="cat-card">
+          <a href="BP_EOSpro_Catalog/EOS_Presence.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Presence.png" alt="Presence Blueprint nodes"></a>
+          <div><h3>Presence <span class="n">3 nodes</span></h3>
+          <p>Set and query rich presence — status text and joinable state shown in the social overlay and to friends.</p></div>
+        </div>
+
+        <div class="cat-card">
+          <a href="BP_EOSpro_Catalog/EOS_UserInfo.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_UserInfo.png" alt="UserInfo Blueprint nodes"></a>
+          <div><h3>UserInfo <span class="n">3 nodes</span></h3>
+          <p>Resolve display names and external-account info for any account ID, with a cached <code>GetCachedDisplayName</code> for UI lookups.</p></div>
+        </div>
+
+        <div class="cat-card">
+          <a href="BP_EOSpro_Catalog/EOS_CustomInvites.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_CustomInvites.png" alt="CustomInvites Blueprint nodes"></a>
+          <div><h3>Custom Invites <span class="n">13 nodes</span></h3>
+          <p>App-defined invites with your own payload — send / accept / reject, plus an event receiver with a <code>BlueprintAssignable</code> delegate for incoming invites.</p></div>
+        </div>
+
+        <div class="cat-card">
+          <a href="BP_EOSpro_Catalog/EOS_UI.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_UI.png" alt="UI overlay Blueprint nodes"></a>
+          <div><h3>UI Overlay <span class="n">3 nodes</span></h3>
+          <p>Show / hide the EOS <strong>social overlay</strong> (friends, invites, account) and query whether it's currently visible.</p></div>
+        </div>
+
+        <div class="cat-card">
+          <a href="BP_EOSpro_Catalog/EOS_Achievements.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Achievements.png" alt="Achievements Blueprint nodes"></a>
+          <div><h3>Achievements <span class="n">5 nodes</span></h3>
+          <p>Unlock achievements, query achievement definitions, and read a player's unlocked progress. Driven by Stats thresholds where configured.</p></div>
+        </div>
+
+        <div class="cat-card">
+          <a href="BP_EOSpro_Catalog/EOS_Stats.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Stats.png" alt="Stats Blueprint nodes"></a>
+          <div><h3>Stats <span class="n">4 nodes</span></h3>
+          <p>Ingest stat values and query them back — the data source behind leaderboards and stat-threshold achievements.</p></div>
+        </div>
+
+        <div class="cat-card">
+          <a href="BP_EOSpro_Catalog/EOS_Leaderboards.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Leaderboards.png" alt="Leaderboards Blueprint nodes"></a>
+          <div><h3>Leaderboards <span class="n">6 nodes</span></h3>
+          <p>Query leaderboard definitions, global ranks, and specific users' scores.</p></div>
+        </div>
+
+        <div class="cat-card">
+          <a href="BP_EOSpro_Catalog/EOS_Ecom.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Ecom.png" alt="Ecom Blueprint nodes"></a>
+          <div><h3>Ecom <span class="n">13 nodes</span></h3>
+          <p>Epic Games Store commerce — query offers (all / by-id), run <code>EOSCheckout</code>, verify ownership, and read entitlements &amp; receipts.</p></div>
+        </div>
+
+        <div class="cat-card">
+          <a href="BP_EOSpro_Catalog/EOS_Platform.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Platform.png" alt="Platform purchase bridge Blueprint nodes"></a>
+          <div><h3>Platform — OSS purchase bridge <span class="n">6 nodes</span></h3>
+          <p>Cross-platform purchases — <code>EOSPlatformPurchase</code> routes through the engine's <code>IOnlinePurchase</code> for whichever store (Epic / Steam / Google Play / App Store) is active at runtime. No Blueprint branching needed.</p></div>
+        </div>
+
+        <div class="cat-card">
+          <a href="BP_EOSpro_Catalog/EOS_Progression.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Progression.png" alt="Progression Blueprint nodes"></a>
+          <div><h3>Progression Snapshot <span class="n">4 nodes</span></h3>
+          <p>Submit key/value progression snapshots of a player's progress to Epic's Progression service.</p></div>
+        </div>
+
+        <div class="cat-card">
+          <a href="BP_EOSpro_Catalog/EOS_Storage.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Storage.png" alt="Player Data Storage Blueprint nodes"></a>
+          <div><h3>Player Data Storage <span class="n">10 nodes</span></h3>
+          <p>Per-player encrypted cloud saves — read / write / list / delete / duplicate player files, plus metadata copy.</p></div>
+        </div>
+
+        <div class="cat-card">
+          <a href="BP_EOSpro_Catalog/EOS_TitleStorage.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_TitleStorage.png" alt="Title Storage Blueprint nodes"></a>
+          <div><h3>Title Storage <span class="n">4 nodes</span></h3>
+          <p>Read-only, title-wide cloud files (config, content manifests) shared by every player.</p></div>
+        </div>
+
+        <div class="cat-card">
+          <a href="BP_EOSpro_Catalog/EOS_RTC.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_RTC.png" alt="RTC voice Blueprint nodes"></a>
+          <div><h3>RTC voice <span class="n">19 nodes</span></h3>
+          <p>Real-time voice chat — join / leave rooms, manage input/output devices, mute, and a global push-to-talk. Lobbies can host their own RTC room automatically.</p></div>
+        </div>
+
+        <div class="cat-card">
+          <a href="BP_EOSpro_Catalog/EOS_AntiCheat.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_AntiCheat.png" alt="Anti-Cheat Blueprint nodes"></a>
+          <div><h3>Anti-Cheat <span class="n">9 nodes</span></h3>
+          <p>Easy Anti-Cheat scaffolding — begin / end protected sessions, register peers, and bridge AC messages on both client and server.</p></div>
+        </div>
+
+        <div class="cat-card">
+          <a href="BP_EOSpro_Catalog/EOS_Reports.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Reports.png" alt="Reports Blueprint nodes"></a>
+          <div><h3>Reports <span class="n">2 nodes</span></h3>
+          <p>Submit player-behaviour reports (cheating, harassment, etc.) to Epic's moderation backend.</p></div>
+        </div>
+
+        <div class="cat-card">
+          <a href="BP_EOSpro_Catalog/EOS_Sanctions.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Sanctions.png" alt="Sanctions Blueprint nodes"></a>
+          <div><h3>Sanctions <span class="n">2 nodes</span></h3>
+          <p>Query the active sanctions (bans, restrictions) applied to a player.</p></div>
+        </div>
+
+        <div class="cat-card">
+          <a href="BP_EOSpro_Catalog/EOS_Metrics.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Metrics.png" alt="Metrics Blueprint nodes"></a>
+          <div><h3>Metrics <span class="n">2 nodes</span></h3>
+          <p>Begin / end player-session metrics that feed the analytics dashboards in the Epic Developer Portal.</p></div>
+        </div>
+
+        <div class="cat-card">
+          <a href="BP_EOSpro_Catalog/EOS_Mods.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Mods.png" alt="Mods Blueprint nodes"></a>
+          <div><h3>Mods <span class="n">9 nodes</span></h3>
+          <p>mod.io-backed mods — enumerate, install, uninstall and update mods for the title.</p></div>
+        </div>
+
+        <div class="cat-card">
+          <a href="BP_EOSpro_Catalog/EOS_IntegratedPlatform.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_IntegratedPlatform.png" alt="Integrated Platform Blueprint nodes"></a>
+          <div><h3>Integrated Platform <span class="n">4 nodes</span></h3>
+          <p>Report Steam / EGS login status to EOS so the overlay and friends integrate with the native platform.</p></div>
+        </div>
+
+        <div class="cat-card">
+          <a href="BP_EOSpro_Catalog/EOS_Core.png" target="_blank" rel="noopener"><img loading="lazy" src="BP_EOSpro_Catalog/EOS_Core.png" alt="Core subsystem Blueprint nodes"></a>
+          <div><h3>Core &amp; Subsystems <span class="n">46 nodes</span></h3>
+          <p>The central <code>UEOSproSubsystem</code> owns the EOS platform handle and exposes every interface accessor, plus <strong>21 typed per-category sub-subsystems</strong> (<code>UEOSAuthSubsystem</code>, <code>UEOSSessionsSubsystem</code>, …) for clean Blueprint access.</p></div>
+        </div>
+
+      </div>
+    </section>
+
     <!-- ============== INSTALLATION ============== -->
     <section id="installation">
       <h2>Installation &amp; settings</h2>
 
       <h3>1. Enable the plugin</h3>
-      <p>EOSCore is already listed in <code>PluginCore.uproject</code>. In a new project add:</p>
+      <p>EOSpro is already listed in <code>PluginCore.uproject</code>. In a new project add:</p>
 <pre><code>"Plugins": [
-  { "Name": "EOSCore", "Enabled": true }
+  { "Name": "EOSpro", "Enabled": true }
 ]</code></pre>
 
       <h3>2. Fill credentials in Project Settings</h3>
-      <p><strong>Project Settings → Plugins → EOSCore → Credentials</strong>:</p>
+      <p><strong>Project Settings → Plugins → EOSpro → Credentials</strong>:</p>
       <table class="table bp-table table-sm">
         <thead><tr><th>Field</th><th>Source</th></tr></thead>
         <tbody>
@@ -249,7 +624,7 @@ footer { color: #6b7280; font-size: 0.85rem; text-align: center; padding: 30px;
   -WaitMutex -FromMsBuild</code></pre>
       <div class="callout warn">
         <span class="label">Note</span>
-        UE4.27 cannot hot-reload plugin DLLs. After any <code>.cpp</code> change: fully close the editor, delete <code>Plugins/EOSCore/{Binaries,Intermediate}</code>, rebuild, reopen.
+        UE4.27 cannot hot-reload plugin DLLs. After any <code>.cpp</code> change: fully close the editor, delete <code>Plugins/EOSpro/{Binaries,Intermediate}</code>, rebuild, reopen.
       </div>
     </section>
 
@@ -276,7 +651,7 @@ footer { color: #6b7280; font-size: 0.85rem; text-align: center; padding: 30px;
           <tr><td>DevAuth Tool</td><td>credential name from DevAuthTool</td><td>Set <code>Id = "127.0.0.1:6547"</code>.</td></tr>
         </tbody>
       </table>
-      <p>On success, <code>UEOSCoreSubsystem::GetLocalEpicAccountId()</code> and <code>GetLocalProductUserId()</code> are populated. The <code>OnInitialized</code>, <code>OnAuthLoginChanged</code>, and <code>OnConnectLoginChanged</code> multicast delegates fire.</p>
+      <p>On success, <code>UEOSproSubsystem::GetLocalEpicAccountId()</code> and <code>GetLocalProductUserId()</code> are populated. The <code>OnInitialized</code>, <code>OnAuthLoginChanged</code>, and <code>OnConnectLoginChanged</code> multicast delegates fire.</p>
     </section>
 
     <!-- ============== TESTING ============== -->
@@ -495,7 +870,7 @@ footer { color: #6b7280; font-size: 0.85rem; text-align: center; padding: 30px;
     <section id="purchases">
       <h2>OSS purchase bridge — cross-platform billing</h2>
       <p>
-        <code>EOSCore</code> ships with a small bridge that routes purchases through the engine's <code>IOnlinePurchase</code> for whichever Online Subsystem is loaded.
+        <code>EOSpro</code> ships with a small bridge that routes purchases through the engine's <code>IOnlinePurchase</code> for whichever Online Subsystem is loaded.
         You get Epic Games / Steam / Google Play / App Store from one BP graph without branching.
       </p>
       <div class="pillrow">
@@ -510,7 +885,7 @@ footer { color: #6b7280; font-size: 0.85rem; text-align: center; padding: 30px;
       <table class="table bp-table table-sm">
         <thead><tr><th>Platform</th><th>Enable in <code>.uproject</code></th><th>Plus</th></tr></thead>
         <tbody>
-          <tr><td>Win64 EGS</td><td><code>OnlineSubsystemEOS</code> (auto via EOSCore)</td><td>—</td></tr>
+          <tr><td>Win64 EGS</td><td><code>OnlineSubsystemEOS</code> (auto via EOSpro)</td><td>—</td></tr>
           <tr><td>Steam</td><td><code>OnlineSubsystemSteam</code></td><td>SteamDevAppId in <code>DefaultEngine.ini</code></td></tr>
           <tr><td>Google Play</td><td><code>OnlineSubsystemGooglePlay</code></td><td>Play Console product IDs</td></tr>
           <tr><td>iOS App Store</td><td><code>OnlineSubsystemIOS</code></td><td>App Store Connect IAP setup</td></tr>
@@ -603,11 +978,11 @@ SetRTCSetting("DisableDtx",              "false")  // = DTX on (saves bandwidth)
     <!-- ============== VOICE DEBUGGER ============== -->
     <section id="voiceDebugger">
       <h2>Voice debugger (editor)</h2>
-      <p>The <code>EOSCoreEditor</code> module registers a Slate widget that lives in the editor only (not shipped):</p>
+      <p>The <code>EOSproEditor</code> module registers a Slate widget that lives in the editor only (not shipped):</p>
       <p><strong>Open via:</strong></p>
       <ul>
         <li><strong>Window → EOS Voice Chat Debugger</strong> menu entry</li>
-        <li>Console command <code>EOSCore.ShowVoiceDebugger</code> (works in PIE too)</li>
+        <li>Console command <code>EOSpro.ShowVoiceDebugger</code> (works in PIE too)</li>
       </ul>
       <p>Shows live state: current room selector, joined-room participant list (with talking indicators, mute/block buttons per row), local mic-mute toggle, input/output device combo boxes. Polls subsystem state every 0.5s via an active timer.</p>
     </section>
@@ -696,7 +1071,7 @@ SetRTCSetting("DisableDtx",              "false")  // = DTX on (saves bandwidth)
         <li><code>Get(WorldContextObject)</code> — static, returns the subsystem</li>
         <li><code>IsReady()</code> — pure, true if the underlying EOS interface handle is available</li>
       </ul>
-      <p>The proxies delegate to <code>UEOSCoreSubsystem</code> which owns the platform handle. They exist for BP discoverability — "search 'Get EOS Sessions Subsystem'" surfaces the right subsystem cleanly.</p>
+      <p>The proxies delegate to <code>UEOSproSubsystem</code> which owns the platform handle. They exist for BP discoverability — "search 'Get EOS Sessions Subsystem'" surfaces the right subsystem cleanly.</p>
       <pre><code>UEOSAuthSubsystem, UEOSConnectSubsystem, UEOSFriendsSubsystem,
 UEOSPresenceSubsystem, UEOSSessionsSubsystem, UEOSLobbySubsystem,
 UEOSUserInfoSubsystem, UEOSAchievementsSubsystem, UEOSStatsSubsystem,
@@ -716,7 +1091,7 @@ UEOSAntiCheatSubsystem</code></pre>
           <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
             Where do I get ProductId / SandboxId / ClientId?</button></h2>
           <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-            <div class="accordion-body">From the <strong>Epic Developer Portal</strong> → your Product → Product Settings (Product ID), Sandboxes (Sandbox/Deployment IDs), Client Credentials (Client ID / Secret). Paste into Project Settings → Plugins → EOSCore → Credentials.</div>
+            <div class="accordion-body">From the <strong>Epic Developer Portal</strong> → your Product → Product Settings (Product ID), Sandboxes (Sandbox/Deployment IDs), Client Credentials (Client ID / Secret). Paste into Project Settings → Plugins → EOSpro → Credentials.</div>
           </div>
         </div>
 
@@ -725,7 +1100,7 @@ UEOSAntiCheatSubsystem</code></pre>
             Why does my BP login node just fail silently in PIE?</button></h2>
           <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
             <div class="accordion-body">
-              Most common: missing or invalid credentials. Check the Output Log for <code>LogEOSCore</code> errors. For PIE specifically the easiest auth flow is <strong>DevAuthTool</strong> — run the tool, log in, pick a credential name, then use <code>EOSLoginWithPlatform(Developer, Token="YourName", Id="127.0.0.1:6547")</code>.
+              Most common: missing or invalid credentials. Check the Output Log for <code>LogEOSpro</code> errors. For PIE specifically the easiest auth flow is <strong>DevAuthTool</strong> — run the tool, log in, pick a credential name, then use <code>EOSLoginWithPlatform(Developer, Token="YourName", Id="127.0.0.1:6547")</code>.
             </div>
           </div>
         </div>
@@ -783,7 +1158,7 @@ UEOSAntiCheatSubsystem</code></pre>
             How do I rebuild after editing a .cpp?</button></h2>
           <div id="faq8" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
             <div class="accordion-body">
-              UE4.27 doesn't hot-reload plugin DLLs reliably. (1) Fully close the editor (verify <code>UE4Editor.exe</code> is gone from Task Manager), (2) delete <code>Plugins/EOSCore/{Binaries,Intermediate}</code>, (3) run <code>Build.bat PluginCoreEditor Win64 Development -Project=...</code>, (4) reopen the project.
+              UE4.27 doesn't hot-reload plugin DLLs reliably. (1) Fully close the editor (verify <code>UE4Editor.exe</code> is gone from Task Manager), (2) delete <code>Plugins/EOSpro/{Binaries,Intermediate}</code>, (3) run <code>Build.bat PluginCoreEditor Win64 Development -Project=...</code>, (4) reopen the project.
             </div>
           </div>
         </div>
@@ -793,7 +1168,7 @@ UEOSAntiCheatSubsystem</code></pre>
             Why are headers under Public/Core/, Public/Auth/, etc. instead of flat?</button></h2>
           <div id="faq9" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
             <div class="accordion-body">
-              Organizational. Each EOS interface gets its own subfolder so Solution Explorer / IDE browsers don't dump 100+ files in a flat list. The Build.cs sets <code>bLegacyPublicIncludePaths = true</code> so unqualified <code>#include "EOSCoreTypes.h"</code> still resolves no matter which subfolder the including file lives in.
+              Organizational. Each EOS interface gets its own subfolder so Solution Explorer / IDE browsers don't dump 100+ files in a flat list. The Build.cs sets <code>bLegacyPublicIncludePaths = true</code> so unqualified <code>#include "EOSproTypes.h"</code> still resolves no matter which subfolder the including file lives in.
             </div>
           </div>
         </div>
@@ -806,15 +1181,15 @@ UEOSAntiCheatSubsystem</code></pre>
 
       <h3>Build errors</h3>
       <ul>
-        <li><strong>"Cannot open include file: 'EOSCoreTypes.h'"</strong> — your Build.cs is missing <code>bLegacyPublicIncludePaths = true</code>. Dependent modules need this too.</li>
+        <li><strong>"Cannot open include file: 'EOSproTypes.h'"</strong> — your Build.cs is missing <code>bLegacyPublicIncludePaths = true</code>. Dependent modules need this too.</li>
         <li><strong>Duplicate function definition under unity build</strong> — two .cpp files have the same file-scope <code>static</code> helper (typical: <code>AccountIdToString</code>). Rename one with a file-unique prefix.</li>
-        <li><strong>"Target is up to date" but no DLL produced</strong> — check that <code>EOSCore</code> is <code>"Enabled": true</code> in your <code>.uproject</code>.</li>
+        <li><strong>"Target is up to date" but no DLL produced</strong> — check that <code>EOSpro</code> is <code>"Enabled": true</code> in your <code>.uproject</code>.</li>
       </ul>
 
       <h3>Runtime issues</h3>
       <ul>
-        <li><strong>EOS Overlay (Shift+F1) doesn't appear</strong> — requires successful Auth login. Check <code>UEOSCoreSettings.bEnableOverlay</code> is true. Renderer must be D3D11/D3D12 (UE4.27 default).</li>
-        <li><strong>RTC initialization fails on Windows</strong> — <code>xaudio2_9redist.dll</code> not at the path passed in <code>EOS_Windows_RTCOptions.XAudio29DllPath</code>. The subsystem resolves this via <code>IPluginManager::FindPlugin("EOSCore")->GetBaseDir() + "/Binaries/Win64/xaudio2_9redist.dll"</code>. Verify the DLL was staged.</li>
+        <li><strong>EOS Overlay (Shift+F1) doesn't appear</strong> — requires successful Auth login. Check <code>UEOSproSettings.bEnableOverlay</code> is true. Renderer must be D3D11/D3D12 (UE4.27 default).</li>
+        <li><strong>RTC initialization fails on Windows</strong> — <code>xaudio2_9redist.dll</code> not at the path passed in <code>EOS_Windows_RTCOptions.XAudio29DllPath</code>. The subsystem resolves this via <code>IPluginManager::FindPlugin("EOSpro")->GetBaseDir() + "/Binaries/Win64/xaudio2_9redist.dll"</code>. Verify the DLL was staged.</li>
         <li><strong>SetAudioInputSettings returns failure</strong> — requires a valid Connect-logged-in PUID. Make sure <code>EOSConnectLogin</code> completed first; the subsystem applies persisted device settings in <code>SetLocalProductUserId</code>.</li>
       </ul>
 
@@ -831,8 +1206,8 @@ UEOSAntiCheatSubsystem</code></pre>
     <!-- ============== SOURCE LAYOUT ============== -->
     <section id="layout">
       <h2>Source layout</h2>
-<pre><code>Source/EOSCore/
-├── EOSCore.Build.cs         (bLegacyPublicIncludePaths = true)
+<pre><code>Source/EOSpro/
+├── EOSpro.Build.cs         (bLegacyPublicIncludePaths = true)
 ├── Public/
 │   ├── Core/                Module, Settings, Subsystem, Types
 │   ├── Auth/                AuthLibrary + AuthSubsystem + LoginWithPlatform + …
@@ -851,13 +1226,13 @@ UEOSAntiCheatSubsystem</code></pre>
 │   └── Platform/            OSS bridge for cross-platform purchases
 └── Private/                 (mirrors Public)
 
-Source/EOSCoreEditor/
-├── EOSCoreEditor.Build.cs
+Source/EOSproEditor/
+├── EOSproEditor.Build.cs
 ├── Public/
-│   ├── EOSCoreEditor.h
+│   ├── EOSproEditor.h
 │   └── SEOSVoiceChatDebugger.h
 └── Private/
-    ├── EOSCoreEditor.cpp    Module + Window menu + console command
+    ├── EOSproEditor.cpp    Module + Window menu + console command
     └── SEOSVoiceChatDebugger.cpp</code></pre>
     </section>
 
@@ -865,7 +1240,7 @@ Source/EOSCoreEditor/
 </div>
 
 <footer>
-  <p>EOSCore · UE4.27 · EOS SDK 1.19.0.7 · 262 Blueprint nodes · © 2026 Alpha XP. All Rights Reserved.</p>
+  <p>EOSpro · UE4.27 · EOS SDK 1.19.0.7 · 262 Blueprint nodes · © 2026 Alpha XP. All Rights Reserved.</p>
 </footer>
 
 <!-- Bootstrap JS (for FAQ accordion) -->
@@ -887,6 +1262,51 @@ Source/EOSCoreEditor/
   }
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
+
+  const toggle = document.getElementById('sidebarToggle');
+  if (toggle) toggle.addEventListener('click', function () {
+    document.body.classList.toggle('sidebar-collapsed');
+  });
+})();
+</script>
+
+<!-- Paginate the Blueprint node gallery -->
+<script>
+(function () {
+  const grid = document.getElementById('shot-grid');
+  const pager = document.getElementById('gallery-pager');
+  if (!grid || !pager) return;
+  const figs = Array.prototype.slice.call(grid.querySelectorAll('.shot'));
+  const PAGE_SIZE = 12;
+  const pageCount = Math.max(1, Math.ceil(figs.length / PAGE_SIZE));
+  let current = 1;
+
+  function addBtn(label, page, opts) {
+    const b = document.createElement('button');
+    b.className = 'pg-btn' + (opts && opts.active ? ' active' : '');
+    b.innerHTML = label;
+    if (opts && opts.disabled) b.disabled = true;
+    b.addEventListener('click', function () {
+      if (page < 1 || page > pageCount || page === current) return;
+      current = page;
+      render();
+      document.getElementById('gallery').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    pager.appendChild(b);
+  }
+
+  function render() {
+    figs.forEach(function (f, i) {
+      f.style.display = (Math.floor(i / PAGE_SIZE) + 1 === current) ? '' : 'none';
+    });
+    pager.innerHTML = '';
+    if (pageCount <= 1) return;
+    addBtn('&lsaquo; Prev', current - 1, { disabled: current === 1 });
+    for (let p = 1; p <= pageCount; p++) addBtn(String(p), p, { active: p === current });
+    addBtn('Next &rsaquo;', current + 1, { disabled: current === pageCount });
+  }
+
+  render();
 })();
 </script>
 

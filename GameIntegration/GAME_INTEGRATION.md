@@ -1,6 +1,6 @@
-# EOSCore — Building a Working Multiplayer Game Project
+# EOSpro — Building a Working Multiplayer Game Project
 
-Step-by-step recipe for wiring **EOSCore** into a real UE4.27 game project: `UGameInstance`, `AGameMode`, `APlayerController`, HUD/UMG, `USaveGame`, and the OSS purchase bridge.
+Step-by-step recipe for wiring **EOSpro** into a real UE4.27 game project: `UGameInstance`, `AGameMode`, `APlayerController`, HUD/UMG, `USaveGame`, and the OSS purchase bridge.
 
 > This is the **integration cookbook**. For the BP-node reference, see `Documentation/index.html`.
 
@@ -9,7 +9,7 @@ Step-by-step recipe for wiring **EOSCore** into a real UE4.27 game project: `UGa
 ## TL;DR — minimum-viable flow
 
 ```
-GameInstance::Init()       ─► EOS_Platform_Create  (via UEOSCoreSubsystem auto-init)
+GameInstance::Init()       ─► EOS_Platform_Create  (via UEOSproSubsystem auto-init)
                               │
 PlayerController::BeginPlay  ─► EOSLoginWithPlatform(EpicGames)
                               │   (or DevAuth in PIE, Steam/Apple/Google in shipping)
@@ -35,9 +35,9 @@ SaveGame::Save              ─► UGameplayStatics::SaveGameToSlot
 
 ## 1. Project setup checklist
 
-1. **Enable the plugin** — `EOSCore` is already in `PluginCore.uproject`. For a new project add it under `Plugins:`.
-2. **Fill credentials** — Project Settings → Plugins → EOSCore → Credentials. (See `Documentation/index.html` Installation section.)
-3. **Pick your default login platform** — Project Settings → Plugins → EOSCore → Login Defaults → Default Login Platform. For PC dev pick **Epic Games (Account Portal)**.
+1. **Enable the plugin** — `EOSpro` is already in `PluginCore.uproject`. For a new project add it under `Plugins:`.
+2. **Fill credentials** — Project Settings → Plugins → EOSpro → Credentials. (See `Documentation/index.html` Installation section.)
+3. **Pick your default login platform** — Project Settings → Plugins → EOSpro → Login Defaults → Default Login Platform. For PC dev pick **Epic Games (Account Portal)**.
 4. **(Optional) Anti-Cheat** — drop `base_public.cer` into `Build/NoRedist/`, flip Enable Anti-Cheat.
 5. **(Optional) Cross-platform purchase OSS plugins** — enable `OnlineSubsystemSteam` / `OnlineSubsystemGooglePlay` / `OnlineSubsystemIOS` per shipping platform.
 
@@ -51,15 +51,15 @@ SaveGame::Save              ─► UGameplayStatics::SaveGameToSlot
 
 **Why a GameInstance and not the GameMode?**
 - Survives level transitions (GameMode is destroyed on map change).
-- `UEOSCoreSubsystem` is a `UGameInstanceSubsystem` — it auto-creates inside any GameInstance.
+- `UEOSproSubsystem` is a `UGameInstanceSubsystem` — it auto-creates inside any GameInstance.
 - Auth tokens / Connect PUID / RTC room membership all want to outlive map travel.
 
 **BP setup** (Blueprint graph in `BP_EOSGameInstance`):
 
 ```
 Event Init
-  └─► (Auto) UEOSCoreSubsystem::InitializePlatform fires from settings.bAutoInitialize
-  └─► Get EOSCore Subsystem (Core proxy)
+  └─► (Auto) UEOSproSubsystem::InitializePlatform fires from settings.bAutoInitialize
+  └─► Get EOSpro Subsystem (Core proxy)
         │
         └─► Bind Event to OnInitialized → Custom Event "OnEOSReady"
         └─► Bind Event to OnAuthLoginChanged → Custom Event "OnAuthChanged"
@@ -170,7 +170,7 @@ WBP_EOSHUD
 WBP_PlayerRow: shows display name + speaking indicator + mute/block buttons (per-row), calls `EOSUpdateRTCReceiving` and `EOSBlockRTCParticipant`.
 
 WBP_VoiceSettings (in-game runtime menu — separate from the editor debugger):
-- Mic combo: `EOSRTCLibrary::GetAudioInputDevices` → `SetAudioInputSettings`. Save the chosen DeviceId to a runtime save (NOT to UEOSCoreSettings — that's editor-config only).
+- Mic combo: `EOSRTCLibrary::GetAudioInputDevices` → `SetAudioInputSettings`. Save the chosen DeviceId to a runtime save (NOT to UEOSproSettings — that's editor-config only).
 - Speaker combo: same shape with output devices.
 - Noise suppression / AEC toggles → `EOSRTCLibrary::SetRTCSetting("DisableNoiseSuppression", "true"/"false")`.
 
@@ -200,7 +200,7 @@ Event OnPlayerReady (from BP_EOSGameInstance)
               ├─► Apply bMicMuteOnJoin into a GameInstance-level bool
               └─► Restore inventory by pushing to PlayerState
         └─► If not exists:
-              └─► Spawn fresh BP_EOSSaveGame, populate with defaults from EOSCore settings
+              └─► Spawn fresh BP_EOSSaveGame, populate with defaults from EOSpro settings
 
 Event OnApplicationWillDeactivate (FCoreDelegates)
   └─► SaveGameToSlot(CurrentSave, "DefaultSave", 0)
@@ -241,7 +241,7 @@ WBP_OfferCard::OnBuyClicked
 
 ## 4. Anti-Cheat wiring
 
-Only relevant for multiplayer games shipped with EAC. EOSCore exposes a scaffold — you wire the bytes through your normal network channel.
+Only relevant for multiplayer games shipped with EAC. EOSpro exposes a scaffold — you wire the bytes through your normal network channel.
 
 ```
 GameMode (server) BeginPlay:
@@ -272,11 +272,11 @@ Drop `base_public.cer` from EOS Portal → Anti-Cheat → Download integrity key
 
 | Symptom | Cause | Fix |
 |---|---|---|
-| Login node returns silent failure in PIE | Missing credentials or wrong default platform | Check Output Log for `LogEOSCore`. For PIE use `Developer` platform + DevAuthTool token. |
+| Login node returns silent failure in PIE | Missing credentials or wrong default platform | Check Output Log for `LogEOSpro`. For PIE use `Developer` platform + DevAuthTool token. |
 | Voice chat join succeeds but no audio | `bDefaultMicMuted` is true OR caller never called `TransmitToAllRooms(true)` | Check Voice Chat settings + push-to-talk binding |
 | `GetLobbyRTCRoomName` returns empty | Lobby was created with `bEnableRTCRoom=false` | Either set it true on `EOSCreateLobby` or in Project Settings → Lobby Defaults |
 | `EOSPlatformPurchase` returns "No active OnlineSubsystem" | The matching engine plugin isn't enabled | Enable `OnlineSubsystemSteam` / `OnlineSubsystemGooglePlay` etc. in `.uproject`, set DefaultPlatformService in DefaultEngine.ini |
-| AC `BeginClientSession` returns false | Cert missing or Connect login not yet complete | `Action_ValidateAntiCheatCert` button in EOSCore settings; gate BeginClientSession on `OnConnectChanged` event |
+| AC `BeginClientSession` returns false | Cert missing or Connect login not yet complete | `Action_ValidateAntiCheatCert` button in EOSpro settings; gate BeginClientSession on `OnConnectChanged` event |
 | `LoadGameFromSlot` returns null | First-time launch — no save yet | Always null-check and spawn a fresh `BP_EOSSaveGame` |
 
 ---
@@ -317,7 +317,7 @@ Set in `Project Settings`:
 
 1. Install Epic Games Launcher; sign in once.
 2. Unzip `Source/ThirdParty/EOSSDK/DevAuth/EOS_DevAuthTool-win32-x64-1.2.1.zip`, run it, log in, name your dev credential `DevA`.
-3. In Project Settings → EOSCore → Login Defaults → Default Login Platform = **DevAuth Tool**. Save.
+3. In Project Settings → EOSpro → Login Defaults → Default Login Platform = **DevAuth Tool**. Save.
 4. PIE with 2 players (Number of Players = 2, Net Mode = Play As Client).
 5. Player 1 logs in with `Token=DevA, Id=127.0.0.1:6547`. Player 2 with `Token=DevB`. (Create DevB in DevAuthTool first.)
 6. Player 1 (host) creates the lobby; both see Player Count = 2 in HUD.
