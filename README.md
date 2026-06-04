@@ -205,52 +205,23 @@ Source/ThirdParty/EOSSDK/ Bundled SDK: Include/, libs, per-platform runtimes, De
 
 ## FAQ
 
-**1. Login does nothing and the log shows `EOS_Initialize failed: EOS_IncompatibleVersion`.**
-UE 4.27 ships its own older `EOSSDK-Win64-Shipping.dll` in `Engine/Binaries/Win64`. EOSpro
-force-loads its bundled v1.19 DLL first (at PostConfigInit) so the engine copy can't win. If you
-see this, confirm the log line `EOSpro: loaded EOS SDK from .../Plugins/EOSpro/Binaries/Win64/...`
-appears — if not, the plugin's `Binaries/Win64` is missing the staged DLL; rebuild the plugin.
-
-**2. Account Portal sign-in succeeds, then login fails with `EOS_Auth_CorrectiveActionRequired`
-(or a "Missing Permissions" overlay).** This is **not** about your app being unverified (the
-"Unverified Application" screen is fine — just click *Continue*). It means the **scopes your login
-requests don't match what your Epic Account Services app requires**. EOSpro requests Basic Profile
-+ Friends + Presence + Country; either grant exactly those in EAS → Permissions, or remove the
-ones you don't want. The client must also be **linked to the EAS application**.
-
-**3. I get an EAID but no PUID, and `Connect: Not connected`. Sessions fail.** The Auth step
-worked (Epic account) but the Connect step (product user) didn't. On a player's **first** sign-in
-to your product, EOS returns `EOS_InvalidUser` + a continuance token and the product user must be
-created. EOSpro handles this automatically now — if you still see it, rebuild so you have the
-current `EOSpro.dll`. Sessions/Stats/Leaderboards all need the PUID.
-
-**4. How do I keep players logged in across crashes and restarts?** Use **Persistent Auth**. After
-any Account Portal / DevAuth login the SDK stores a refresh token; call `EOSAutoLogin` on startup
-to silently restore EAID + PUID with no UI. The sample's `GameInstance` does this automatically.
-An explicit **Logout** calls `DeletePersistentAuth` so it doesn't auto-restore afterward.
-
-**5. What do I put in the DevAuth `127.0.0.1:6547` field? Is it a browser link?** No — it's the
-**local address of the EOS Dev Auth Tool** running on your PC (`127.0.0.1` = localhost, `6547` = a
-port you choose in the tool). Run `EOS_DevAuthTool.exe`, sign in once, name the credential; then
-put that address in the Host field and the credential name in the Name field. For an actual
-browser flow, use **Account Portal** instead.
-
-**6. I just want to test quickly without any portal setup.** Use **Device ID** login — it's an
-anonymous Connect identity that works with a Connect-only (Peer2Peer) client policy, needs no
-Epic Account Services, no browser, and no DevAuth tool. It yields a PUID (no EAID). EOSpro
-auto-creates the Device ID and the product user on first use.
-
-**7. Sessions fail with `EOS_ClientPolicyMissingAction`, or Stats ingest fails with
-`EOS_InvalidAuth`.** These are **client-policy** permissions in the Dev Portal, not code bugs. Your
-client policy must grant the **create/modify Session** action and **Stats ingest** / **Achievement
-unlock** write actions. Note EOS restricts client-side stat ingest for anti-cheat reasons — stats
-that feed leaderboards are meant to come from a trusted server.
-
-**8. Voice chat says "lobby has no RTC room," or I want to know how voice works.** EOS voice needs
-a token only your backend can mint for raw RTC rooms, so EOSpro's demo uses **Lobby voice**:
-create a lobby with *Auto-create Voice Room* enabled and the SDK auto-joins its RTC room — then
-`EOSUpdateRTCSending` mutes/unmutes and `GetRoomParticipants` lists speakers. You need a second
-client in the same lobby to actually hear audio, plus mic permission on mobile.
+1. **Login does nothing / `EOS_IncompatibleVersion`?** The engine's older EOS DLL is loading
+   instead of ours — rebuild the plugin so its bundled v1.19 DLL is staged and force-loaded first.
+2. **Account Portal completes then fails (`CorrectiveActionRequired`)?** Not an app-verification
+   issue — your login scopes must match your EAS app's required permissions, and the client must be
+   linked to the EAS app.
+3. **EAID but no PUID?** First-ever sign-in must create the product user (continuance flow) —
+   handled automatically now; rebuild if you still see it. Sessions need the PUID.
+4. **Keep players logged in across crashes?** Persistent Auth — call `EOSAutoLogin` on startup to
+   silently restore the session; Logout clears it.
+5. **What's `127.0.0.1:6547`?** The local address of the EOS Dev Auth Tool, not a browser link.
+   Want a browser? Use Account Portal instead.
+6. **Fastest test with no portal setup?** Device ID login — anonymous, yields a PUID, no EAS/tool.
+7. **Sessions `ClientPolicyMissingAction` / Stats `InvalidAuth`?** Dev Portal client-policy
+   permissions, not bugs — grant Session create/modify and Stats/Achievement write (stat ingest is
+   often server-only).
+8. **Voice "lobby has no RTC"?** Enable *Auto-create Voice Room* and use Lobby voice (the SDK
+   auto-joins the room); you need a second client to hear audio, plus mic permission on mobile.
 
 ---
 
