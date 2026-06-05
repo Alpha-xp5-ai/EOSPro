@@ -1,6 +1,6 @@
 # EOSpro
 
-**A complete, Blueprint-first integration of Epic Online Services for Unreal Engine 4.27.**
+**A complete, Blueprint-first integration of Epic Online Services for Unreal Engine 4.27 – 5.7.0.**
 
 EOSpro wraps the Epic Online Services C SDK (v1.19.0.7) into a clean, fully Blueprint-exposed
 API so you can add cross-platform identity, matchmaking, voice, progression, storage, and
@@ -35,7 +35,7 @@ lifecycle managed for you by a game-instance subsystem, and a consistent async-n
 
 | | |
 |---|---|
-| **Engine** | Unreal Engine 4.27 (PhysX; no UE5-only APIs) |
+| **Engine** | Unreal Engine 4.27 – 5.7.0 |
 | **EOS SDK** | 1.19.0.7 (bundled under `Source/ThirdParty/EOSSDK/`) |
 | **Modules** | `EOSpro` (runtime) · `EOSproEditor` (voice debugger) · `EOSproExample` (sample game) |
 | **Blueprint surface** | 262 nodes across 26 categories |
@@ -205,8 +205,9 @@ Source/ThirdParty/EOSSDK/ Bundled SDK: Include/, libs, per-platform runtimes, De
 
 ## FAQ
 
-1. **Login does nothing / `EOS_IncompatibleVersion`?** The engine's older EOS DLL is loading
-   instead of ours — rebuild the plugin so its bundled v1.19 DLL is staged and force-loaded first.
+1. **Login does nothing / `EOS_IncompatibleVersion`?** A different EOS DLL is loading instead of
+   ours — the engine ships its own EOS SDK (UE 5.x via EOSShared/OnlineSubsystemEOS; UE 4.27 an
+   older bundled copy). Rebuild the plugin so its bundled v1.19 DLL is staged and force-loaded first.
 2. **Account Portal completes then fails (`CorrectiveActionRequired`)?** Not an app-verification
    issue — your login scopes must match your EAS app's required permissions, and the client must be
    linked to the EAS app.

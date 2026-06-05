@@ -210,7 +210,7 @@ footer { color: #6b7280; font-size: 0.85rem; text-align: center; padding: 30px;
         <div><b>1.19</b><span>EOS SDK</span></div>
       </div>
       <div class="fab-platforms">
-        <span class="plat ue"><i class="bi bi-controller"></i> UE 4.27</span>
+        <span class="plat ue"><i class="bi bi-controller"></i> UE 4.27–5.7.0</span>
         <span class="plat"><i class="bi bi-windows"></i> Win64</span>
         <span class="plat"><i class="bi bi-apple"></i> Mac</span>
         <span class="plat"><i class="bi bi-ubuntu"></i> Linux</span>
@@ -240,7 +240,7 @@ footer { color: #6b7280; font-size: 0.85rem; text-align: center; padding: 30px;
   <button id="sidebarToggle" class="sidebar-toggle" title="Toggle sidebar" aria-label="Toggle sidebar"><i class="bi bi-list"></i></button>
   <span class="brand">EOS<span class="accent">pro</span></span>
   <span class="version-pill">v1.0.0</span>
-  <span class="version-pill">UE 4.27</span>
+  <span class="version-pill">UE 4.27–5.7.0</span>
   <span class="version-pill">SDK 1.19.0.7</span>
   <span class="version-pill">262 BP nodes</span>
   <div class="ms-auto d-flex gap-3 align-items-center">
@@ -320,10 +320,10 @@ footer { color: #6b7280; font-size: 0.85rem; text-align: center; padding: 30px;
     <section id="overview">
       <h2>Overview</h2>
       <p>
-        <strong>EOSpro</strong> is a UE4.27 plugin that wraps Epic Online Services SDK 1.19.0.7 with a comprehensive Blueprint surface — <strong>262 BP nodes</strong> across 26 categories, including voice chat (RTC), an editor-side voice debugger, an Anti-Cheat scaffold, and an OSS bridge that routes purchases through whichever store (Epic Games / Steam / Google Play / App Store) is active at runtime.
+        <strong>EOSpro</strong> is a UE 4.27 – 5.7.0 plugin that wraps Epic Online Services SDK 1.19.0.7 with a comprehensive Blueprint surface — <strong>262 BP nodes</strong> across 26 categories, including voice chat (RTC), an editor-side voice debugger, an Anti-Cheat scaffold, and an OSS bridge that routes purchases through whichever store (Epic Games / Steam / Google Play / App Store) is active at runtime.
       </p>
       <p>
-        It's a <em>direct EOS SDK wrapper</em>, not a custom <code>OnlineSubsystem</code> implementation — meaning you call EOS interfaces directly from Blueprint instead of going through UE4's OSS layer. (The OSS bridge for purchases is the one exception, since it needs to route across multiple stores.)
+        It's a <em>direct EOS SDK wrapper</em>, not a custom <code>OnlineSubsystem</code> implementation — meaning you call EOS interfaces directly from Blueprint instead of going through UE's OSS layer. (The OSS bridge for purchases is the one exception, since it needs to route across multiple stores.)
       </p>
 
       <div class="row mt-3">
@@ -618,13 +618,13 @@ footer { color: #6b7280; font-size: 0.85rem; text-align: center; padding: 30px;
       </ol>
 
       <h3>5. Build</h3>
-<pre><code>"C:/Program Files/Epic Games/UE_4.27/Engine/Build/BatchFiles/Build.bat" \
+<pre><code>"C:/Program Files/Epic Games/UE_5.7/Engine/Build/BatchFiles/Build.bat" \
   PluginCoreEditor Win64 Development \
   -Project="C:/AlphaCore/ASUS/MY-Cmd/UE4-Plugin/PluginCore/PluginCore.uproject" \
   -WaitMutex -FromMsBuild</code></pre>
       <div class="callout warn">
         <span class="label">Note</span>
-        UE4.27 cannot hot-reload plugin DLLs. After any <code>.cpp</code> change: fully close the editor, delete <code>Plugins/EOSpro/{Binaries,Intermediate}</code>, rebuild, reopen.
+        Live Coding can be unreliable for plugin DLLs. After any <code>.cpp</code> change, the safest path is: fully close the editor, delete <code>Plugins/EOSpro/{Binaries,Intermediate}</code>, rebuild, reopen.
       </div>
     </section>
 
@@ -1158,7 +1158,7 @@ UEOSAntiCheatSubsystem</code></pre>
             How do I rebuild after editing a .cpp?</button></h2>
           <div id="faq8" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
             <div class="accordion-body">
-              UE4.27 doesn't hot-reload plugin DLLs reliably. (1) Fully close the editor (verify <code>UE4Editor.exe</code> is gone from Task Manager), (2) delete <code>Plugins/EOSpro/{Binaries,Intermediate}</code>, (3) run <code>Build.bat PluginCoreEditor Win64 Development -Project=...</code>, (4) reopen the project.
+              Live Coding can be unreliable for plugin DLLs. The robust path: (1) Fully close the editor (verify <code>UnrealEditor.exe</code> is gone from Task Manager), (2) delete <code>Plugins/EOSpro/{Binaries,Intermediate}</code>, (3) run <code>Build.bat PluginCoreEditor Win64 Development -Project=...</code>, (4) reopen the project.
             </div>
           </div>
         </div>
@@ -1188,7 +1188,7 @@ UEOSAntiCheatSubsystem</code></pre>
 
       <h3>Runtime issues</h3>
       <ul>
-        <li><strong>EOS Overlay (Shift+F1) doesn't appear</strong> — requires successful Auth login. Check <code>UEOSproSettings.bEnableOverlay</code> is true. Renderer must be D3D11/D3D12 (UE4.27 default).</li>
+        <li><strong>EOS Overlay (Shift+F1) doesn't appear</strong> — requires successful Auth login. Check <code>UEOSproSettings.bEnableOverlay</code> is true. Renderer must be D3D11/D3D12 (engine default).</li>
         <li><strong>RTC initialization fails on Windows</strong> — <code>xaudio2_9redist.dll</code> not at the path passed in <code>EOS_Windows_RTCOptions.XAudio29DllPath</code>. The subsystem resolves this via <code>IPluginManager::FindPlugin("EOSpro")->GetBaseDir() + "/Binaries/Win64/xaudio2_9redist.dll"</code>. Verify the DLL was staged.</li>
         <li><strong>SetAudioInputSettings returns failure</strong> — requires a valid Connect-logged-in PUID. Make sure <code>EOSConnectLogin</code> completed first; the subsystem applies persisted device settings in <code>SetLocalProductUserId</code>.</li>
       </ul>
@@ -1240,7 +1240,7 @@ Source/EOSproEditor/
 </div>
 
 <footer>
-  <p>EOSpro · UE4.27 · EOS SDK 1.19.0.7 · 262 Blueprint nodes · © 2026 Alpha XP. All Rights Reserved.</p>
+  <p>EOSpro · UE 4.27 – 5.7.0 · EOS SDK 1.19.0.7 · 262 Blueprint nodes · © 2026 Alpha XP. All Rights Reserved.</p>
 </footer>
 
 <!-- Bootstrap JS (for FAQ accordion) -->
